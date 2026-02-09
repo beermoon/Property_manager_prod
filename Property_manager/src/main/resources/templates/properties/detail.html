@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:HH="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>매물 상세</title>
+</head>
+<body>
+
+<p><a href="/properties"><- 목록</a></p>
+<h1 th:text="${property.title}">매물 제목</h1>
+
+<ul>
+    <li><b>ID:</b><span th:text="${property.id}">1</span></li>
+    <li><b>주소</b><span th:text="${property.address}">주소</span></li>
+    <li><b>가격:</b><span th:text="${property.price}">0</span></li>
+    <li><b>유형:</b><span th:text="${property.type}">ONE_ROOM</span></li>
+    <li><b>상태:</b><span th:text="${property.status}">ACTIVE</span></li>
+    <li><b>좌표:</b>
+        <span th:text="${property.lat}">lat</span>
+        <span th:text="${property.lng}">lng</span>
+    </li>
+</ul>
+
+<form th:action="@{|/properties/${property.id}/delete|}" method="post">
+    <button type="submit">삭제</button>
+</form>
+
+<hr/>
+
+<h2>메모</h2>
+<form th:action="@{|/properties/${property.id}/memos|}" method="post">
+    <div>
+        <textarea name="content" row="3" cols="60" required
+        placeholder="메모를 입력하세요"></textarea>
+    </div>
+    <div style="margin-top : 8px">
+        <button type="submit">메모 추가</button>
+    </div>
+</form>
+
+<ul>
+    <li th:if="${#lists.isEmpty(memos)}">메모가 없습니다.</li>
+
+
+    <li th:each="m : ${memos}">
+        <span th:text="${#temporals.format(m.createdAt, 'yyyy-MM-dd HH:mm')}">시간</span>
+        -
+        <span th:text="${m.content}">내용</span>
+    </li>
+
+</ul>
+
+
+</body>
+</html>

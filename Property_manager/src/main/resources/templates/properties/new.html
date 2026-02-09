@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>매물 등록</title>
+</head>
+<body>
+<h1>매물 등록</h1>
+
+<form action="/properties" method="post">
+    <div>
+        <label>제목</label><br/>
+        <input name="title" required/>
+    </div>
+
+    <div>
+        <label>주소</label></br>
+        <input name="address" required/>
+    </div>
+
+    <div>
+        <label>가격</label></br>
+        <input name="price" type="number"/>
+    </div>
+
+    <div>
+        <label>유형</label></br>
+        <select name="type" required>
+            <option th:each="t : ${types}" th:value="${t}" th:text="${t}">ONE_ROOM</option>
+        </select>
+    </div>
+
+    <div style="margin-top : 12px;">
+        <button type="submit">저장</button>
+        <a href="/properties">취소</a>
+    </div>
+
+</form>
+
+</body>
+</html>
