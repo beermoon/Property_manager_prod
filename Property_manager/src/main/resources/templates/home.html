@@ -20,6 +20,31 @@
         center: new naver.maps.LatLng(37.5665, 126.9780), // 서울시청 근처
         zoom: 12
     });
+
+    fetch('/api/properties')
+        .then(res => res.json())
+        .then(list => {
+            list.forEach(p => {
+                const marker = new naver.maps.Marker({
+                    position: new naver.maps.LatLng(p.lat, p.lng),
+                    map: map
+                });
+
+                const info = new naver.maps.InfoWindow({
+                    content: `
+            <div style="padding:8px;">
+              <b>${p.title}</b><br/>
+              <a href="/properties/${p.id}">상세보기</a>
+            </div>
+          `
+                });
+
+                naver.maps.Event.addListener(marker, 'click', () => {
+                    info.open(map, marker);
+                });
+            });
+        });
+
 </script>
 </body>
 </html>
