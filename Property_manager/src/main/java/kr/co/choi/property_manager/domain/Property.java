@@ -24,15 +24,19 @@ public class Property {
     private Double lat;
     private Double lng;
 
+    // 가격
+    @Column(nullable = false)
     private Long price;
 
+    // 유형
     @Enumerated(EnumType.STRING)
     @Column(nullable =false)
-    private PropertyType type = PropertyType.ETC;
+    private PropertyType type;
 
+    // 상태 (거래중/완료)
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private PropertyStatus status = PropertyStatus.ACTIVE;
+    private PropertyStatus status;
 
     @OneToMany(mappedBy = "property", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("createdAt DESC")
@@ -43,11 +47,12 @@ public class Property {
 
     protected Property() { }
 
-    public Property(String title, String address, Long price, PropertyType type) {
+    public Property(String title, String address, Long price, PropertyType type,PropertyStatus status) {
         this.title = title;
         this.address = address;
         this.price = price;
         this.type = type;
+        this.status = status;
     }
 
     @PrePersist
@@ -98,4 +103,4 @@ public class Property {
     }
 
 
-}
+} 

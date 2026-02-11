@@ -20,4 +20,7 @@ spring:
 
 naver:
   maps:
-    client-id: m09cd547kq
+    js-key-id: m09cd547kq
+  geocoding:
+    key-id: m09cd547kq
+    key: kDPZOGcUy3BigR0cRYQGp43B9j6D1TcCEFzEDuev

@@ -3,6 +3,7 @@ package kr.co.choi.property_manager.domain;
 public enum PropertyType {
     ONE_ROOM,
     TWO_ROOM,
+    ThREE_ROOM,
     OFFICE_TEL,
     STORE,
     ETC
