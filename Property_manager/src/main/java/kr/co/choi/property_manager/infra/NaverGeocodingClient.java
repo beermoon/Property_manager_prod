@@ -1,7 +1,6 @@
 package kr.co.choi.property_manager.infra;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -18,17 +17,23 @@ public class NaverGeocodingClient {
     private final String key;
 
     public NaverGeocodingClient(
-            @Value("${naver.geocoding.key-id") String keyId,
-            @Value("${naver.geocoding.key") String key
+            @Value("${naver.geocoding.key-id}") String keyId,
+            @Value("${naver.geocoding.key}") String key
     ) {
         this.restClient = RestClient.create();
         this.keyId = keyId;
         this.key = key;
+
+
+        System.out.println("NaverGeocodingClient keyId=" + (keyId == null ? "null" : keyId));
+        System.out.println("NaverGeocodingClient key length=" + (key == null ? "null" : key.length()));
     }
+
+
 
     public GeoPoint geocodeOrThrow(String address) {
         URI uri = UriComponentsBuilder
-                .fromUriString("https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode")
+                .fromUriString("https://maps.apigw.ntruss.com/map-geocode/v2/geocode")
                 .queryParam("query", address)
                 .encode(StandardCharsets.UTF_8)
                 .build()
@@ -42,7 +47,13 @@ public class NaverGeocodingClient {
                 .body(GeocodeResponse.class);
 
         if (res == null || res.addresses == null || res.addresses.isEmpty()) {
-            throw new IllegalArgumentException("주소를 찾을 수 없습니다 . 더 구체적으로 입력해 주세요.");
+            throw new IllegalArgumentException("정확한 도로명 주소, 지번 주소 또는 우편번호를 입력해주세요.");
+        }
+
+        if (res.addresses.size() > 1) {
+            throw new IllegalArgumentException(
+                    "주소가 모호합니다. 도로명 + 건물번호까지 입력해주세요."
+            );
         }
 
         // 네이버 응답은 x= 경도 (lng) , y = 위도 (lat) 형태

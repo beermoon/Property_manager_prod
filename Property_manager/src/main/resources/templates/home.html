@@ -5,46 +5,116 @@
     <title>Property Manager</title>
     <style>
         #map { width: 100%; height: 600px; }
+        .search-bar { margin: 10px 0; display: flex; gap: 8px; }
+        .search-bar input { width: 320px; padding: 6px 8px; }
+        .search-bar button { padding: 6px 10px; }
+        #hint { margin: 6px 0; color: #666; font-size: 14px; }
     </style>
 </head>
 <body>
 <h1>매물 지도</h1>
 
+<div class="search-bar">
+    <input id="keyword" type="text" placeholder="제목 또는 주소 검색 (예: 부산, 해운대)" />
+    <button id="btnSearch" type="button">검색</button>
+    <button id="btnReset" type="button">전체</button>
+</div>
+<div id="hint"></div>
+
 <div id="map"></div>
 
-<!-- ✅ 네이버 지도 JS 로드: ncpClientId 필요 -->
-<script type="text/javascript" src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=m09cd547kq"></script>
+<script type="text/javascript"
+        src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=m09cd547kq"></script>
+
 <script>
-    // ✅ 지도 생성 (문서 예제와 동일한 방식)
     const map = new naver.maps.Map('map', {
-        center: new naver.maps.LatLng(37.5665, 126.9780), // 서울시청 근처
+        center: new naver.maps.LatLng(37.5665, 126.9780),
         zoom: 12
     });
 
-    fetch('/api/properties')
-        .then(res => res.json())
-        .then(list => {
-            list.forEach(p => {
-                const marker = new naver.maps.Marker({
-                    position: new naver.maps.LatLng(p.lat, p.lng),
-                    map: map
+    // ✅ 마커/인포윈도우를 배열로 관리해서 검색 시 제거 가능
+    let markers = [];
+    let infoWindows = [];
+
+    function clearMarkers() {
+        markers.forEach(m => m.setMap(null));
+        markers = [];
+        infoWindows = [];
+    }
+
+    function setHint(text) {
+        document.getElementById('hint').textContent = text ?? '';
+    }
+
+    function loadMarkers(keyword) {
+        const url = keyword && keyword.trim()
+            ? `/api/properties?keyword=${encodeURIComponent(keyword.trim())}`
+            : `/api/properties`;
+
+        fetch(url)
+            .then(res => res.json())
+            .then(list => {
+                clearMarkers();
+
+                setHint(keyword && keyword.trim()
+                    ? `검색어 "${keyword.trim()}" 결과: ${list.length}건`
+                    : `전체 매물: ${list.length}건`
+                );
+
+                list.forEach(p => {
+                    const marker = new naver.maps.Marker({
+                        position: new naver.maps.LatLng(p.lat, p.lng),
+                        map: map
+                    });
+
+                    const info = new naver.maps.InfoWindow({
+                        content: `
+                          <div style="padding:8px;">
+                            <b>${p.title}</b><br/>
+                            <a href="/properties/${p.id}">상세보기</a>
+                          </div>
+                        `
+                    });
+
+                    naver.maps.Event.addListener(marker, 'click', () => {
+                        // 다른 인포윈도우 닫기(선택사항)
+                        infoWindows.forEach(iw => iw.close());
+                        info.open(map, marker);
+                    });
+
+                    markers.push(marker);
+                    infoWindows.push(info);
                 });
 
-                const info = new naver.maps.InfoWindow({
-                    content: `
-            <div style="padding:8px;">
-              <b>${p.title}</b><br/>
-              <a href="/properties/${p.id}">상세보기</a>
-            </div>
-          `
-                });
-
-                naver.maps.Event.addListener(marker, 'click', () => {
-                    info.open(map, marker);
-                });
+                // 선택: 검색 결과가 있으면 첫 매물로 화면 이동
+                if (list.length > 0) {
+                    map.setCenter(new naver.maps.LatLng(list[0].lat, list[0].lng));
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                setHint('마커 로딩 실패');
             });
-        });
+    }
 
+    // ✅ 버튼/엔터키 이벤트
+    document.getElementById('btnSearch').addEventListener('click', () => {
+        loadMarkers(document.getElementById('keyword').value);
+    });
+
+    document.getElementById('btnReset').addEventListener('click', () => {
+        document.getElementById('keyword').value = '';
+        loadMarkers('');
+    });
+
+    document.getElementById('keyword').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            loadMarkers(e.target.value);
+        }
+    });
+
+    // ✅ 최초 로딩: 전체 매물
+    loadMarkers('');
 </script>
 </body>
 </html>

@@ -62,7 +62,7 @@ public class Property {
     }
 
     @PreUpdate
-    void perUpdate() {
+    void preUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
 
@@ -73,7 +73,7 @@ public class Property {
     }
 
     public void removeMemo(Memo memo) {
-        this.memos.add(memo);
+        this.memos.remove(memo);
         memo.setProperty(null);
     }
 
@@ -103,4 +103,4 @@ public class Property {
     }
 
 
-} 
+}

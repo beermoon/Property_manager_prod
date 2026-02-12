@@ -4,26 +4,57 @@ package kr.co.choi.property_manager.controller;
 import kr.co.choi.property_manager.domain.Property;
 import kr.co.choi.property_manager.domain.PropertyStatus;
 import kr.co.choi.property_manager.domain.PropertyType;
+import kr.co.choi.property_manager.infra.NaverGeocodingClient;
 import kr.co.choi.property_manager.repository.PropertyRepository;
 import kr.co.choi.property_manager.repository.specs.PropertySpecs;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import kr.co.choi.property_manager.infra.NaverGeocodingClient;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
+@RequestMapping("/api")
 public class PropertyApiController {
 
     private final PropertyRepository propertyRepository;
+    private final NaverGeocodingClient naverGeocodingClient;
 
-    public PropertyApiController(PropertyRepository propertyRepository) {
+    public PropertyApiController(PropertyRepository propertyRepository,
+                                 NaverGeocodingClient naverGeocodingClient) {
         this.propertyRepository = propertyRepository;
+        this.naverGeocodingClient = naverGeocodingClient;
     }
 
-    @GetMapping("/api/properties")
+    @GetMapping("/validate-address")
+    public Map<String, Object> validateAddress(@RequestParam String address) {
+
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            var point = naverGeocodingClient.geocodeOrThrow(address);
+
+            result.put("valid", true);
+            result.put("message", "확인된 주소입니다.");
+            result.put("lat", point.lat());
+            result.put("lng", point.lng());
+
+        } catch (IllegalArgumentException e) {
+            result.put("valid", false);
+            result.put("message", e.getMessage());
+        }
+
+        return result;
+    }
+
+
+    @GetMapping("/properties")
     public List<PropertyMarkerDto> markers(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) PropertyStatus status,

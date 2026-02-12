@@ -1,9 +1,13 @@
 spring:
+  profiles:
+    active: local
+
   datasource:
     url: jdbc:h2:mem:testdb
     driver-class-name: org.h2.Driver
     username: sa
     password:
+
 
   h2:
     console:
@@ -18,9 +22,6 @@ spring:
         format_sql: true
     show-sql: true
 
-naver:
-  maps:
-    js-key-id: m09cd547kq
-  geocoding:
-    key-id: m09cd547kq
-    key: kDPZOGcUy3BigR0cRYQGp43B9j6D1TcCEFzEDuev
+
+
+

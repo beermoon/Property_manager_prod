@@ -12,6 +12,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import kr.co.choi.property_manager.infra.NaverGeocodingClient;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Controller
 @RequestMapping("/properties")
 public class PropertyController {
@@ -45,7 +48,7 @@ public class PropertyController {
     @PostMapping
     public String create(@RequestParam String title,
                          @RequestParam String address,
-                         @RequestParam(required = false) Long price,
+                         @RequestParam (required = false) Long price,
                          @RequestParam PropertyType type,
                          Model model) {
 
@@ -53,14 +56,16 @@ public class PropertyController {
            var point = naverGeocodingClient.geocodeOrThrow(address);
 
            Property property = new Property(title, address, price, type, PropertyStatus.ACTIVE);
-           property.setLat(point.lat());
-           property.setLng(point.lng());
+           property.updateLocation(point.lat(),point.lng());
 
            propertyRepository.save(property);
            return "redirect:/properties";
 
-       } catch (IllegalArgumentException e) {
+       } catch (Exception e) {
            // A 전략 : 실패하면 등록 화면으로 되돌리고 메세지 표시
+
+           e.printStackTrace();
+
            model.addAttribute("error",e.getMessage());
            model.addAttribute("types",PropertyType.values());
            return "properties/new";
@@ -101,6 +106,7 @@ public class PropertyController {
         propertyRepository.deleteById(id);
         return "redirect:/properties";
     }
+
 
 
 

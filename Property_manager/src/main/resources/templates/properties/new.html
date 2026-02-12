@@ -9,6 +9,12 @@
 </head>
 <body>
 <h1>매물 등록</h1>
+<p style="color:gray;">
+    ※ 도로명 주소, 지번 주소 중 하나를 정확히 입력해주세요.
+    예: 부산광역시 해운대구 센텀동로 45
+</p>
+
+
 
 <form action="/properties" method="post">
     <div>
@@ -17,13 +23,14 @@
     </div>
 
     <div>
-        <label>주소</label></br>
-        <input name="address" required/>
+        <label>주소</label><br/>
+        <input name="address" id="addressInput" required/>
+        <div id="addressMessage" style="margin-top:5px;"></div>
     </div>
 
     <div>
         <label>가격</label></br>
-        <input name="price" type="number"/>
+        <input name="price" type="number" required/>
     </div>
 
     <div>
@@ -34,11 +41,41 @@
     </div>
 
     <div style="margin-top : 12px;">
-        <button type="submit">저장</button>
+        <button type="submit" id="saveBtn" disabled>저장</button>
         <a href="/properties">취소</a>
     </div>
 
 </form>
 
+
+
 </body>
+
+<script>
+    const addressInput = document.getElementById("addressInput");
+    const messageDiv = document.getElementById("addressMessage");
+    const saveBtn = document.getElementById("saveBtn");
+
+    addressInput.addEventListener("blur", function () {
+
+        const address = addressInput.value.trim();
+
+        if (!address) return;
+
+        fetch(`/api/validate-address?address=${encodeURIComponent(address)}`)
+            .then(res => res.json())
+            .then(data => {
+
+                if (data.valid) {
+                    messageDiv.style.color = "green";
+                    messageDiv.textContent = "✅ " + data.message;
+                    saveBtn.disabled = false;
+                } else {
+                    messageDiv.style.color = "red";
+                    messageDiv.textContent = "❌ " + data.message;
+                    saveBtn.disabled = true;
+                }
+            });
+    });
+</script>
 </html>
