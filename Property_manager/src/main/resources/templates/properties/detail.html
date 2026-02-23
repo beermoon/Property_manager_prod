@@ -1,58 +1,113 @@
 <!doctype html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:HH="http://www.w3.org/1999/xhtml">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>매물 상세</title>
+    <style>
+        section { margin: 18px 0; padding: 12px; border: 1px solid #ddd; }
+        h2 { margin: 0 0 10px 0; }
+        .row { margin: 6px 0; }
+        .label { display:inline-block; width: 140px; color:#555; }
+    </style>
 </head>
 <body>
 
-<p><a href="/properties"><- 목록</a></p>
-<h1 th:text="${property.title}">매물 제목</h1>
+<h1>매물 상세</h1>
 
-<ul>
-    <li><b>ID:</b><span th:text="${property.id}">1</span></li>
-    <li><b>주소</b><span th:text="${property.address}">주소</span></li>
-    <li><b>가격:</b><span th:text="${property.price}">0</span></li>
-    <li><b>유형:</b><span th:text="${property.type}">ONE_ROOM</span></li>
-    <li><b>상태:</b><span th:text="${property.status}">ACTIVE</span></li>
-    <li><b>좌표:</b>
-        <span th:text="${property.lat}">lat</span>
-        <span th:text="${property.lng}">lng</span>
-    </li>
-</ul>
+<p>
+    <a href="/properties">← 목록으로</a>
+</p>
 
-<form th:action="@{|/properties/${property.id}/delete|}" method="post">
-    <button type="submit">삭제</button>
-</form>
+<p>
+    <a th:href="@{|/map?propertyId=${property.id}|}">📍 지도에서 보기</a>
+</p>
 
-<hr/>
+<section>
+    <h2>기본 정보</h2>
+    <div class="row"><span class="label">제목</span> <span th:text="${property.title}">제목</span></div>
+    <div class="row"><span class="label">구역</span> <span th:text="${property.region}">구역</span></div>
+    <div class="row"><span class="label">건물명</span> <span th:text="${property.buildingName}">건물명</span></div>
+    <div class="row"><span class="label">도로명 주소</span> <span th:text="${property.address}">주소</span></div>
+    <div class="row"><span class="label">지번 주소</span> <span th:text="${property.lotAddress}">지번주소</span></div>
+    <div class="row"><span class="label">호수</span> <span th:text="${property.unitNumber}">호수</span></div>
+    <div class="row"><span class="label">준공연도</span> <span th:text="${property.builtYear}">준공연도</span></div>
+    <div class="row"><span class="label">평수</span> <span th:text="${property.area}">평수</span></div>
+</section>
 
-<h2>메모</h2>
-<form th:action="@{|/properties/${property.id}/memos|}" method="post">
-    <div>
-        <textarea name="content" row="3" cols="60" required
-        placeholder="메모를 입력하세요"></textarea>
+<section>
+    <h2>거래 정보</h2>
+    <div class="row"><span class="label">거래유형</span> <span th:text="${property.dealType}">MONTHLY</span></div>
+
+    <div th:if="${property.dealType.name() == 'MONTHLY'}">
+        <div class="row"><span class="label">보증금</span> <span th:text="${property.depositMan} + ' 만원'"></span></div>
+        <div class="row"><span class="label">월세</span> <span th:text="${property.monthlyRentMan} + ' 만원'"></span></div>
     </div>
-    <div style="margin-top : 8px">
-        <button type="submit">메모 추가</button>
+
+    <div th:if="${property.dealType.name() == 'JEONSE'}">
+        <div class="row"><span class="label">전세</span> <span th:text="${property.depositMan} + ' 만원'"></span></div>
     </div>
-</form>
 
-<ul>
-    <li th:if="${#lists.isEmpty(memos)}">메모가 없습니다.</li>
+    <div class="row"><span class="label">관리비</span> <span th:text="${property.managementFeeMan} + ' 만원'"></span></div>
+    <div class="row"><span class="label">상태</span> <span th:text="${property.status}">VACANT</span></div>
+</section>
+<p style="color:gray;">※ 금액은 ‘만원 단위’로 입력하세요. 예) 보증금 2000 / 월세 50</p>
 
+<section>
+    <h2>옵션</h2>
 
-    <li th:each="m : ${memos}">
-        <span th:text="${#temporals.format(m.createdAt, 'yyyy-MM-dd HH:mm')}">시간</span>
-        -
-        <span th:text="${m.content}">내용</span>
-    </li>
+    <div class="row">
+        <span class="label">엘리베이터</span>
+        <span th:text="${property.hasElevator == true ? '있음' : '없음'}">있음</span>
+    </div>
 
-</ul>
+    <div class="row">
+        <span class="label">주차</span>
+        <span th:text="${property.hasParking == true ? '가능' : '불가'}">가능</span>
+    </div>
 
+    <div class="row">
+        <span class="label">룸 개수</span>
+        <span th:text="${property.roomCount != null ? property.roomCount + '개' : '-'}">1개</span>
+    </div>
+
+    <div class="row">
+        <span class="label">반려동물</span>
+        <span th:text="${property.petAllowed == true ? '가능' : '불가'}">불가</span>
+    </div>
+
+    <div class="row">
+        <span class="label">LH 가능</span>
+        <span th:text="${property.lhAvailable == true ? '가능' : '불가'}">가능</span>
+    </div>
+</section>
+
+<section>
+    <h2>연락 / 비밀번호</h2>
+    <div class="row"><span class="label">세입자 연락처</span> <span th:text="${property.tenantPhone}">010-</span></div>
+    <div class="row"><span class="label">건물주 연락처</span> <span th:text="${property.ownerPhone}">010-</span></div>
+
+    <div class="row"><span class="label">공동현관 비번</span>
+        <span th:text="${property.entrancePassword}">비밀번호</span>
+    </div>
+
+    <div class="row"><span class="label">집 비번</span>
+        <span th:text="${property.housePassword}">비밀번호</span>
+    </div>
+</section>
+
+<!-- 메모 영역(네가 기존에 메모 기능 붙였었으니 유지 가능) -->
+<section>
+    <h2>메모</h2>
+    <div th:if="${#lists.isEmpty(property.memos)}">메모 없음</div>
+
+    <ul th:if="${!#lists.isEmpty(property.memos)}">
+        <li th:each="m : ${property.memos}" th:text="${m.content}">메모 내용</li>
+    </ul>
+
+    <p>
+        <a th:href="@{|/properties/${property.id}/memos/new|}">+ 메모 추가</a>
+    </p>
+</section>
 
 </body>
 </html>

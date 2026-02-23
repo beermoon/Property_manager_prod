@@ -2,16 +2,13 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>매물 목록</title>
-
 </head>
 <body>
 <h1>매물 목록</h1>
+
 <p>
-    <a href = "/properties/new">+ 매물 등록</a>
+    <a href="/properties/new">+ 매물 등록</a>
 </p>
 
 <table border="1" cellpadding="8">
@@ -20,12 +17,14 @@
         <th>ID</th>
         <th>제목</th>
         <th>주소</th>
-        <th>유형</th>
+        <th>거래유형</th>
+        <th>보증금</th>
+        <th>월세</th>
         <th>상태</th>
         <th>액션</th>
-
     </tr>
     </thead>
+
     <tbody>
     <tr th:each="p : ${properties}">
         <td th:text="${p.id}">1</td>
@@ -33,15 +32,28 @@
             <a th:href="@{|/properties/${p.id}|}" th:text="${p.title}">제목</a>
         </td>
         <td th:text="${p.address}">주소</td>
-        <td th:text="${p.type}">ONE_ROOM</td>
-        <td th:text="${p.status}">ACTIVE</td>
+
+        <td th:text="${p.dealType}">MONTHLY</td>
         <td>
-            <form th:action="@{|/properties/${p.id}/delete}" method="post" style="display:inline;">
+    <span th:if="${p.dealType.name() == 'MONTHLY'}">
+        <span th:text="${p.depositMan}"></span> /
+        <span th:text="${p.monthlyRentMan}"></span>
+    </span>
+
+            <span th:if="${p.dealType.name() == 'JEONSE'}">
+        <span th:text="${p.depositMan}"></span>
+    </span>
+        </td>
+        <td th:text="${p.status}">VACANT</td>
+
+        <td>
+            <form th:action="@{|/properties/${p.id}/delete|}" method="post" style="display:inline;">
                 <button type="submit">삭제</button>
             </form>
         </td>
     </tr>
     </tbody>
 </table>
+
 </body>
 </html>

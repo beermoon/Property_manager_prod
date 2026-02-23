@@ -1,9 +1,7 @@
 package kr.co.choi.property_manager.controller;
 
-import kr.co.choi.property_manager.domain.Memo;
-import kr.co.choi.property_manager.domain.Property;
-import kr.co.choi.property_manager.domain.PropertyStatus;
-import kr.co.choi.property_manager.domain.PropertyType;
+import kr.co.choi.property_manager.controller.dto.PropertyCreateRequest;
+import kr.co.choi.property_manager.domain.*;
 import kr.co.choi.property_manager.infra.NaverGeocodingClient;
 import kr.co.choi.property_manager.repository.MemoRepository;
 import kr.co.choi.property_manager.repository.PropertyRepository;
@@ -46,28 +44,32 @@ public class PropertyController {
     }
 
     @PostMapping
-    public String create(@RequestParam String title,
-                         @RequestParam String address,
-                         @RequestParam (required = false) Long price,
-                         @RequestParam PropertyType type,
+    public String create(@ModelAttribute PropertyCreateRequest request,
                          Model model) {
 
        try {
-           var point = naverGeocodingClient.geocodeOrThrow(address);
+           // 1) 주소 검증 + 지오코딩 (실패하면 throw)
+           var point = naverGeocodingClient.geocodeOrThrow(request.getAddress());
 
-           Property property = new Property(title, address, price, type, PropertyStatus.ACTIVE);
-           property.updateLocation(point.lat(),point.lng());
+           // 2) 엔티티 생성(빈 객체 ) + 값 적용
+           Property property = new Property();
+           property.updateAll(request);
 
+           // 3) 좌표 저장
+           property.updateLocation(point.lat(), point.lng());
+
+           // 4) 저장
            propertyRepository.save(property);
+
            return "redirect:/properties";
 
        } catch (Exception e) {
-           // A 전략 : 실패하면 등록 화면으로 되돌리고 메세지 표시
 
            e.printStackTrace();
-
            model.addAttribute("error",e.getMessage());
-           model.addAttribute("types",PropertyType.values());
+
+           // 폼 제랜더링용
+           model.addAttribute("dealTypes", DealType.values());
            return "properties/new";
        }
 

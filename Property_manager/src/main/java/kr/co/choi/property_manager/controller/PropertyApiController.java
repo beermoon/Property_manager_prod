@@ -1,6 +1,7 @@
 package kr.co.choi.property_manager.controller;
 
 
+import kr.co.choi.property_manager.domain.DealType;
 import kr.co.choi.property_manager.domain.Property;
 import kr.co.choi.property_manager.domain.PropertyStatus;
 import kr.co.choi.property_manager.domain.PropertyType;
@@ -70,8 +71,6 @@ public class PropertyApiController {
         Specification<Property> spec = Specification
                 .where(PropertySpecs.keywordContains(keyword))
                 .and(PropertySpecs.statusEq(status))
-                .and(PropertySpecs.typeEq(type))
-                .and(PropertySpecs.priceBetween(minPrice, maxPrice))
                 // 좌표 없는 건 지도 마커 불가 불가 -> 제외
                 .and((root, query, cb) -> cb.isNotNull(root.get("lat")))
                 .and((root, query, cb) -> cb.isNotNull(root.get("lng")));
@@ -90,8 +89,7 @@ public class PropertyApiController {
             Double lat,
             Double lng,
             PropertyStatus status,
-            PropertyType type,
-            Long price
+            DealType dealType
     ) {
         static PropertyMarkerDto from(Property p) {
             return new PropertyMarkerDto(
@@ -100,8 +98,7 @@ public class PropertyApiController {
                     p.getLat(),
                     p.getLng(),
                     p.getStatus(),
-                    p.getType(),
-                    p.getPrice()
+                    p.getDealType()
             );
         }
     }

@@ -25,8 +25,7 @@ public class NaverGeocodingClient {
         this.key = key;
 
 
-        System.out.println("NaverGeocodingClient keyId=" + (keyId == null ? "null" : keyId));
-        System.out.println("NaverGeocodingClient key length=" + (key == null ? "null" : key.length()));
+
     }
 
 

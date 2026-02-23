@@ -2,80 +2,128 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>매물 등록</title>
+    <style>
+        section { margin-bottom: 30px; }
+        h2 { border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+        label { display:block; margin-top:10px; }
+        input, select { width: 300px; padding:5px; }
+    </style>
 </head>
 <body>
+
 <h1>매물 등록</h1>
-<p style="color:gray;">
-    ※ 도로명 주소, 지번 주소 중 하나를 정확히 입력해주세요.
-    예: 부산광역시 해운대구 센텀동로 45
-</p>
+<p th:if="${error}" th:text="${error}" style="color:red;"></p>
+<form th:action="@{/properties}" method="post">
 
+    <!-- ================= 기본 정보 ================= -->
+    <section>
+        <h2>기본 정보</h2>
 
+        <label>제목 *</label>
+        <input type="text" name="title" required/>
 
-<form action="/properties" method="post">
-    <div>
-        <label>제목</label><br/>
-        <input name="title" required/>
-    </div>
+        <label>구역</label>
+        <input type="text" name="region"/>
 
-    <div>
-        <label>주소</label><br/>
-        <input name="address" id="addressInput" required/>
-        <div id="addressMessage" style="margin-top:5px;"></div>
-    </div>
+        <label>건물명</label>
+        <input type="text" name="buildingName"/>
 
-    <div>
-        <label>가격</label></br>
-        <input name="price" type="number" required/>
-    </div>
+        <label>도로명 주소 *</label>
+        <input type="text" name="address" required/>
 
-    <div>
-        <label>유형</label></br>
-        <select name="type" required>
-            <option th:each="t : ${types}" th:value="${t}" th:text="${t}">ONE_ROOM</option>
+        <label>지번 주소</label>
+        <input type="text" name="lotAddress"/>
+
+        <label>호수</label>
+        <input type="text" name="unitNumber"/>
+
+        <label>준공연도</label>
+        <input type="number" name="builtYear"/>
+
+        <label>평수</label>
+        <input type="number" step="0.1" name="area"/>
+    </section>
+
+    <!-- ================= 거래 정보 ================= -->
+    <section>
+        <h2>거래 정보</h2>
+
+        <label>거래 유형</label>
+        <select name="dealType">
+            <option value="MONTHLY" selected>월세</option>
+            <option value="JEONSE">전세</option>
         </select>
-    </div>
 
-    <div style="margin-top : 12px;">
-        <button type="submit" id="saveBtn" disabled>저장</button>
+        <label>보증금 (만원)</label>
+        <input type="number" name="deposit"/>
+
+        <label>월세 (만원)</label>
+        <input type="number" name="monthlyRent"/>
+
+        <label>관리비 (만원)</label>
+        <input type="number" name="managementFee"/>
+    </section>
+
+    <!-- ================= 옵션 ================= -->
+    <section>
+        <h2>옵션</h2>
+
+        <label>엘리베이터</label>
+        <select name="hasElevator">
+            <option value="">선택안함</option>
+            <option value="true">있음</option>
+            <option value="false">없음</option>
+        </select>
+
+        <label>주차</label>
+        <select name="hasParking">
+            <option value="">선택안함</option>
+            <option value="true">가능</option>
+            <option value="false">불가능</option>
+        </select>
+
+        <label>룸 개수 (최대 4)</label>
+        <input type="number" name="roomCount" min="0" max="4"/>
+
+        <label>반려동물</label>
+        <select name="petAllowed">
+            <option value="">선택안함</option>
+            <option value="true">가능</option>
+            <option value="false">불가능</option>
+        </select>
+
+        <label>LH 가능 여부</label>
+        <select name="lhAvailable">
+            <option value="">선택안함</option>
+            <option value="true">가능</option>
+            <option value="false">불가능</option>
+        </select>
+    </section>
+
+    <!-- ================= 보안 / 연락 ================= -->
+    <section>
+        <h2>보안 / 연락 정보</h2>
+
+        <label>공동현관 비밀번호</label>
+        <input name="entrancePassword"/>
+
+        <label>집 비밀번호</label>
+        <input name="housePassword"/>
+
+        <label>세입자 연락처</label>
+        <input type="text" name="tenantPhone"/>
+
+        <label>건물주 연락처</label>
+        <input type="text" name="ownerPhone"/>
+    </section>
+
+    <div style="margin-top:20px;">
+        <button type="submit">저장</button>
         <a href="/properties">취소</a>
     </div>
 
 </form>
 
-
-
 </body>
-
-<script>
-    const addressInput = document.getElementById("addressInput");
-    const messageDiv = document.getElementById("addressMessage");
-    const saveBtn = document.getElementById("saveBtn");
-
-    addressInput.addEventListener("blur", function () {
-
-        const address = addressInput.value.trim();
-
-        if (!address) return;
-
-        fetch(`/api/validate-address?address=${encodeURIComponent(address)}`)
-            .then(res => res.json())
-            .then(data => {
-
-                if (data.valid) {
-                    messageDiv.style.color = "green";
-                    messageDiv.textContent = "✅ " + data.message;
-                    saveBtn.disabled = false;
-                } else {
-                    messageDiv.style.color = "red";
-                    messageDiv.textContent = "❌ " + data.message;
-                    saveBtn.disabled = true;
-                }
-            });
-    });
-</script>
 </html>
