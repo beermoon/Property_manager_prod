@@ -2,29 +2,337 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8" />
-    <title>Property Manager</title>
+    <title>매물 지도</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
-        #map { width: 100%; height: 600px; }
-        .search-bar { margin: 10px 0; display: flex; gap: 8px; }
-        .search-bar input { width: 320px; padding: 6px 8px; }
-        .search-bar button { padding: 6px 10px; }
-        #hint { margin: 6px 0; color: #666; font-size: 14px; }
+        :root{
+            --border:#e5e7eb;
+            --text:#111827;
+            --muted:#6b7280;
+            --bg:#ffffff;
+            --panel:#f9fafb;
+            --btn:#111827;
+            --btnText:#ffffff;
+            --btnGhost:#ffffff;
+        }
+
+        *{ box-sizing:border-box; }
+        body{
+            margin:0;
+            font-family: ui-sans-serif, system-ui, -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+            color:var(--text);
+            background:var(--bg);
+        }
+
+        .wrap{
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 18px 16px 22px;
+        }
+
+        .topbar{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:12px;
+            margin-bottom:12px;
+        }
+        .topbar h1{
+            margin:0;
+            font-size:20px;
+            letter-spacing:-0.2px;
+        }
+        .topbar a{
+            text-decoration:none;
+            color:var(--text);
+            border:1px solid var(--border);
+            background:#fff;
+            padding:8px 10px;
+            border-radius:10px;
+            font-size:13px;
+        }
+
+        .panel{
+            border:1px solid var(--border);
+            background:var(--panel);
+            border-radius:14px;
+            padding:14px;
+            margin-bottom:12px;
+        }
+
+        .panel-head{
+            display:flex;
+            justify-content:space-between;
+            align-items:flex-end;
+            gap:12px;
+            margin-bottom:10px;
+        }
+        .panel-head .title{
+            font-size:14px;
+            font-weight:700;
+            margin:0;
+        }
+        .panel-head .sub{
+            font-size:12px;
+            color:var(--muted);
+            margin:0;
+        }
+
+        .group{
+            border-top:1px dashed var(--border);
+            padding-top:12px;
+            margin-top:12px;
+        }
+        .group:first-of-type{
+            border-top:none;
+            padding-top:0;
+            margin-top:0;
+        }
+        .group h3{
+            margin:0 0 10px 0;
+            font-size:13px;
+            color:#374151;
+            letter-spacing:-0.1px;
+        }
+
+        /* ✅ 반응형 그리드 */
+        .grid{
+            display:grid;
+            gap:10px;
+        }
+        .grid.two{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .grid.four{ grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        .grid.five{ grid-template-columns: repeat(5, minmax(0, 1fr)); }
+
+        @media (max-width: 1024px){
+            .grid.five{ grid-template-columns: repeat(3, minmax(0, 1fr)); }
+            .grid.four{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        @media (max-width: 640px){
+            .grid.two,
+            .grid.four,
+            .grid.five{ grid-template-columns: 1fr; }
+        }
+
+        .field label{
+            display:block;
+            font-size:12px;
+            color:#4b5563;
+            margin-bottom:6px;
+        }
+        input, select{
+            width:100%;
+            padding:10px 10px;
+            border-radius:10px;
+            border:1px solid var(--border);
+            background:#fff;
+            font-size:13px;
+            outline:none;
+        }
+        input:focus, select:focus{
+            border-color:#c7cdd6;
+            box-shadow: 0 0 0 3px rgba(17,24,39,0.06);
+        }
+
+        /* ✅ 최소~최대 한 줄 */
+        .range{
+            display:grid;
+            grid-template-columns: 1fr 22px 1fr;
+            align-items:center;
+            gap:8px;
+        }
+        .range .sep{
+            text-align:center;
+            color:var(--muted);
+            font-size:12px;
+        }
+
+        .actions{
+            display:flex;
+            justify-content:flex-end;
+            gap:8px;
+            margin-top:12px;
+        }
+        button{
+            border:none;
+            border-radius:10px;
+            padding:10px 12px;
+            font-size:13px;
+            cursor:pointer;
+        }
+        .btn-primary{
+            background:var(--btn);
+            color:var(--btnText);
+        }
+        .btn-ghost{
+            background:var(--btnGhost);
+            border:1px solid var(--border);
+            color:var(--text);
+        }
+
+        .hint{
+            margin-top:10px;
+            font-size:13px;
+            color:var(--muted);
+        }
+
+        #map{
+            width:100%;
+            height:640px;
+            border:1px solid var(--border);
+            border-radius:14px;
+            overflow:hidden;
+            background:#fff;
+        }
     </style>
 </head>
 <body>
-<h1>매물 지도</h1>
+<div class="wrap">
 
-<div class="search-bar">
-    <input id="keyword" type="text" placeholder="제목 또는 주소 검색 (예: 부산, 해운대)" />
-    <button id="btnSearch" type="button">검색</button>
-    <button id="btnReset" type="button">전체</button>
+    <div class="topbar">
+        <h1>매물 지도</h1>
+        <a href="/properties">📄 매물 목록</a>
+    </div>
+
+    <div class="panel">
+        <div class="panel-head">
+            <div>
+                <p class="title">필터</p>
+                <p class="sub">필터를 설정하고 [적용]을 누르면 매물이 표시됩니다.</p>
+            </div>
+            <div class="sub">단위: 금액은 “만원”</div>
+        </div>
+
+        <div class="group">
+            <h3>기본 조건</h3>
+            <div class="grid two">
+                <div class="field">
+                    <label>구역</label>
+                    <input id="region" type="text" placeholder="예: 해운대" />
+                </div>
+
+                <div class="field">
+                    <label>거래유형</label>
+                    <select id="dealType">
+                        <option value="">전체</option>
+                        <option value="MONTHLY">월세</option>
+                        <option value="JEONSE">전세</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="group">
+            <h3>가격/스펙</h3>
+            <div class="grid four">
+                <div class="field">
+                    <label>보증금(만)</label>
+                    <div class="range">
+                        <input id="minDeposit" type="number" placeholder="최소" />
+                        <div class="sep">~</div>
+                        <input id="maxDeposit" type="number" placeholder="최대" />
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>월세(만)</label>
+                    <div class="range">
+                        <input id="minMonthlyRent" type="number" placeholder="최소" />
+                        <div class="sep">~</div>
+                        <input id="maxMonthlyRent" type="number" placeholder="최대" />
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>준공연도</label>
+                    <div class="range">
+                        <input id="minBuiltYear" type="number" placeholder="최소" />
+                        <div class="sep">~</div>
+                        <input id="maxBuiltYear" type="number" placeholder="최대" />
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>평수</label>
+                    <div class="range">
+                        <input id="minArea" type="number" step="0.1" placeholder="최소" />
+                        <div class="sep">~</div>
+                        <input id="maxArea" type="number" step="0.1" placeholder="최대" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="group">
+            <h3>옵션</h3>
+            <div class="grid five">
+                <div class="field">
+                    <label>룸 개수</label>
+                    <select id="roomCount">
+                        <option value="">전체</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label>엘리베이터</label>
+                    <select id="hasElevator">
+                        <option value="">전체</option>
+                        <option value="true">있음</option>
+                        <option value="false">없음</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label>주차</label>
+                    <select id="hasParking">
+                        <option value="">전체</option>
+                        <option value="true">가능</option>
+                        <option value="false">불가</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label>반려동물</label>
+                    <select id="petAllowed">
+                        <option value="">전체</option>
+                        <option value="true">가능</option>
+                        <option value="false">불가</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label>LH</label>
+                    <select id="lhAvailable">
+                        <option value="">전체</option>
+                        <option value="true">LH</option>
+                        <option value="false">일반</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button id="btnReset" class="btn-ghost" type="button">초기화</button>
+            <button id="btnSearch" class="btn-primary" type="button">적용</button>
+        </div>
+
+        <div class="hint" id="hint"></div>
+    </div>
+
+    <div id="map"></div>
+
 </div>
-<div id="hint"></div>
-
-<div id="map"></div>
 
 <script type="text/javascript"
         src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=m09cd547kq"></script>
+
+<script th:inline="javascript">
+    const focusId = /*[[${focusId}]]*/ null;
+</script>
 
 <script>
     const map = new naver.maps.Map('map', {
@@ -32,89 +340,169 @@
         zoom: 12
     });
 
-    // ✅ 마커/인포윈도우를 배열로 관리해서 검색 시 제거 가능
     let markers = [];
     let infoWindows = [];
+    const markerMap = new Map();
+
+    function setHint(text) {
+        const el = document.getElementById('hint');
+        if (el) el.textContent = text || '';
+    }
 
     function clearMarkers() {
         markers.forEach(m => m.setMap(null));
         markers = [];
         infoWindows = [];
+        markerMap.clear();
     }
 
-    function setHint(text) {
-        document.getElementById('hint').textContent = text ?? '';
+    function readValue(id) {
+        const el = document.getElementById(id);
+        return el ? el.value.trim() : '';
     }
 
-    function loadMarkers(keyword) {
-        const url = keyword && keyword.trim()
-            ? `/api/properties?keyword=${encodeURIComponent(keyword.trim())}`
-            : `/api/properties`;
+    function addParam(params, key, raw) {
+        if (raw === null || raw === undefined) return;
+        const v = String(raw).trim();
+        if (v === '') return;
+        params.append(key, v);
+    }
 
-        fetch(url)
-            .then(res => res.json())
-            .then(list => {
-                clearMarkers();
+    function buildQuery() {
+        const params = new URLSearchParams();
 
-                setHint(keyword && keyword.trim()
-                    ? `검색어 "${keyword.trim()}" 결과: ${list.length}건`
-                    : `전체 매물: ${list.length}건`
-                );
+        addParam(params, 'region', readValue('region'));
+        addParam(params, 'dealType', readValue('dealType'));
 
-                list.forEach(p => {
-                    const marker = new naver.maps.Marker({
-                        position: new naver.maps.LatLng(p.lat, p.lng),
-                        map: map
-                    });
+        addParam(params, 'minDeposit', readValue('minDeposit'));
+        addParam(params, 'maxDeposit', readValue('maxDeposit'));
+        addParam(params, 'minMonthlyRent', readValue('minMonthlyRent'));
+        addParam(params, 'maxMonthlyRent', readValue('maxMonthlyRent'));
 
-                    const info = new naver.maps.InfoWindow({
-                        content: `
-                          <div style="padding:8px;">
-                            <b>${p.title}</b><br/>
-                            <a href="/properties/${p.id}">상세보기</a>
-                          </div>
-                        `
-                    });
+        addParam(params, 'minBuiltYear', readValue('minBuiltYear'));
+        addParam(params, 'maxBuiltYear', readValue('maxBuiltYear'));
 
-                    naver.maps.Event.addListener(marker, 'click', () => {
-                        // 다른 인포윈도우 닫기(선택사항)
-                        infoWindows.forEach(iw => iw.close());
-                        info.open(map, marker);
-                    });
+        addParam(params, 'roomCount', readValue('roomCount'));
+        addParam(params, 'hasElevator', readValue('hasElevator'));
+        addParam(params, 'hasParking', readValue('hasParking'));
+        addParam(params, 'petAllowed', readValue('petAllowed'));
+        addParam(params, 'lhAvailable', readValue('lhAvailable'));
 
-                    markers.push(marker);
-                    infoWindows.push(info);
+        addParam(params, 'minArea', readValue('minArea'));
+        addParam(params, 'maxArea', readValue('maxArea'));
+
+        return params.toString();
+    }
+
+    function hasAnyFilter() {
+        const ids = [
+            'region','dealType',
+            'minDeposit','maxDeposit','minMonthlyRent','maxMonthlyRent',
+            'minBuiltYear','maxBuiltYear',
+            'roomCount','hasElevator','hasParking','petAllowed','lhAvailable',
+            'minArea','maxArea'
+        ];
+        return ids.some(id => readValue(id) !== '');
+    }
+
+    async function loadMarkers() {
+        if (!hasAnyFilter()) {
+            clearMarkers();
+            setHint('필터를 설정하고 [적용]을 누르면 매물이 표시됩니다.');
+            return;
+        }
+
+        const qs = buildQuery();
+        const url = `/api/properties?${qs}`;
+
+        try {
+            const res = await fetch(url);
+            const list = await res.json();
+
+            clearMarkers();
+            setHint(`표시된 매물: ${list.length}건`);
+
+            list.forEach(p => {
+                if (p.lat == null || p.lng == null) return;
+
+                const latlng = new naver.maps.LatLng(p.lat, p.lng);
+
+                const marker = new naver.maps.Marker({
+                    position: latlng,
+                    map
                 });
 
-                // 선택: 검색 결과가 있으면 첫 매물로 화면 이동
-                if (list.length > 0) {
-                    map.setCenter(new naver.maps.LatLng(list[0].lat, list[0].lng));
-                }
-            })
-            .catch(err => {
-                console.error(err);
-                setHint('마커 로딩 실패');
+                const info = new naver.maps.InfoWindow({
+                    content: `
+            <div style="padding:10px; min-width:220px;">
+              <b>${p.title ?? ''}</b><br/>
+              <div style="margin:6px 0; color:#666; font-size:12px;">
+                ${p.address ?? ''}
+              </div>
+              <a href="/properties/${p.id}">상세보기</a>
+            </div>
+          `
+                });
+
+                naver.maps.Event.addListener(marker, 'click', () => {
+                    infoWindows.forEach(iw => iw.close());
+                    info.open(map, marker);
+                });
+
+                markers.push(marker);
+                infoWindows.push(info);
+                markerMap.set(p.id, { marker, info, latlng });
             });
+
+            if (focusId != null && markerMap.has(Number(focusId))) {
+                const target = markerMap.get(Number(focusId));
+                map.setCenter(target.latlng);
+                map.setZoom(16);
+                infoWindows.forEach(iw => iw.close());
+                target.info.open(map, target.marker);
+            } else if (list.length > 0) {
+                map.setCenter(new naver.maps.LatLng(list[0].lat, list[0].lng));
+            }
+        } catch (err) {
+            console.error(err);
+            setHint('마커 로딩 실패');
+        }
     }
 
-    // ✅ 버튼/엔터키 이벤트
-    document.getElementById('btnSearch').addEventListener('click', () => {
-        loadMarkers(document.getElementById('keyword').value);
-    });
+    function resetFilters() {
+        const ids = [
+            'region','dealType',
+            'minDeposit','maxDeposit','minMonthlyRent','maxMonthlyRent',
+            'minBuiltYear','maxBuiltYear',
+            'roomCount','hasElevator','hasParking','petAllowed','lhAvailable',
+            'minArea','maxArea'
+        ];
+        ids.forEach(id => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.value = '';
+        });
+    }
 
+    document.getElementById('btnSearch').addEventListener('click', loadMarkers);
     document.getElementById('btnReset').addEventListener('click', () => {
-        document.getElementById('keyword').value = '';
-        loadMarkers('');
+        resetFilters();
+        clearMarkers();
+        setHint('필터를 설정하고 [적용]을 누르면 매물이 표시됩니다.');
     });
 
-    document.getElementById('keyword').addEventListener('keydown', (e) => {
+    document.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
-            loadMarkers(e.target.value);
+            if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT')) {
+                e.preventDefault();
+                loadMarkers();
+            }
         }
     });
 
-    // ✅ 최초 로딩: 전체 매물
-    loadMarkers('');
+    // 최초 로딩: 0개 상태
+    clearMarkers();
+    setHint('필터를 설정하고 [적용]을 누르면 매물이 표시됩니다.');
 </script>
 </body>
 </html>

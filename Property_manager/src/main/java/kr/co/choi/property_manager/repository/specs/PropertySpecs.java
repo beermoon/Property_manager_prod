@@ -1,8 +1,14 @@
 package kr.co.choi.property_manager.repository.specs;
 
+import jakarta.persistence.criteria.Predicate;
+import kr.co.choi.property_manager.domain.DealType;
 import kr.co.choi.property_manager.domain.Property;
 import kr.co.choi.property_manager.domain.PropertyStatus;
 import org.springframework.data.jpa.domain.Specification;
+
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class PropertySpecs {
 
@@ -32,4 +38,94 @@ public class PropertySpecs {
             );
         };
     }
+
+    // 보증금
+    public static Specification<Property> depositBetween(Long min, Long max) {
+        return (root, query,cb) -> {
+            List<Predicate> ps = new ArrayList<>();
+            if (min != null) ps.add(cb.greaterThanOrEqualTo(root.get("deposit"), min * 10_000));
+            if (max != null) ps.add(cb.lessThanOrEqualTo(root.get("deposit"), max * 10_000));
+            return ps.isEmpty() ? cb.conjunction() : cb.and(ps.toArray(new Predicate[0]));
+
+        };
+    }
+
+
+
+
+    // 준공연도
+    public static Specification<Property> builtYearBetween(Integer min, Integer max) {
+        return (root, query,cb) -> {
+            List<Predicate> ps = new ArrayList<>();
+            if (min != null) ps.add(cb.greaterThanOrEqualTo(root.get("builtYear"), min ));
+            if (max != null) ps.add(cb.lessThanOrEqualTo(root.get("builtYear"), max ));
+            return ps.isEmpty() ? cb.conjunction() : cb.and(ps.toArray(new Predicate[0]));
+
+        };
+    }
+
+    // boolean 필터들
+    public static Specification<Property> hasElevator(Boolean value) {
+        return (root, query, cb) ->
+                value == null ? cb.conjunction() : cb.equal(root.get("hasElevator"),value);
+    }
+
+    public static Specification<Property> hasParking(Boolean value) {
+        return (root, query, cb) ->
+                value == null ? cb.conjunction() : cb.equal(root.get("hasParking"),value);
+    }
+
+    public static Specification<Property> petAllowed(Boolean value) {
+        return (root, query, cb) ->
+                value == null ? cb.conjunction() : cb.equal(root.get("petAllowed"),value);
+    }
+
+    public static Specification<Property> lhAvailable(Boolean value) {
+        return (root, query, cb) ->
+                value == null ? cb.conjunction() : cb.equal(root.get("lhAvailable"),value);
+    }
+
+    public static Specification<Property> roomCountEq(Integer count) {
+        return (root, query, cb) ->
+                count == null ? cb.conjunction() : cb.equal(root.get("roomCount"),count);
+    }
+
+    public static Specification<Property> regionEq(String region) {
+        return (root,query,cb) ->
+                (region == null || region.isBlank())
+                ? cb.conjunction()
+                        : cb.equal(root.get("region"),region);
+    }
+
+    public static Specification<Property> dealTypeEq(DealType dealType) {
+        return (root,  query, cb) ->
+                (dealType == null)
+                ? cb.conjunction()
+                : cb.equal(root.get("dealType"), dealType);
+    }
+
+    // 월세
+    public static Specification<Property> monthlyRentBetween(Long minMan, Long maxMan) {
+        return (root, query, cb) -> {
+            List<Predicate> ps = new ArrayList<>();
+            if (minMan != null) ps.add(cb.greaterThanOrEqualTo(root.get("monthlyRent"), minMan * 10_000));
+            if (maxMan != null) ps.add(cb.lessThanOrEqualTo(root.get("monthlyRent"), maxMan * 10_000));
+            return ps.isEmpty() ? cb.conjunction() : cb.and(ps.toArray(new Predicate[0]));
+        };
+    }
+
+
+
+    public static Specification<Property> areaBetween(Double min, Double max) {
+        return (root, query, cb) -> {
+            List<Predicate> ps = new ArrayList<>();
+            if (min != null) ps.add(cb.greaterThanOrEqualTo(root.get("area"), min));
+            if (max != null) ps.add(cb.lessThanOrEqualTo(root.get("area"), max));
+            return ps.isEmpty() ? cb.conjunction() : cb.and(ps.toArray(new Predicate[0]));
+        };
+    }
+
+
+
+
 }

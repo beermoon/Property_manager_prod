@@ -57,25 +57,42 @@ public class PropertyApiController {
 
     @GetMapping("/properties")
     public List<PropertyMarkerDto> markers(
+            @RequestParam(required = false) String region,
+            @RequestParam(required = false) DealType dealType,
+            @RequestParam(required = false) Long minDeposit,
+            @RequestParam(required = false) Long maxDeposit,
+            @RequestParam(required = false) Long minMonthlyRent,
+            @RequestParam(required = false) Long maxMonthlyRent,
+            @RequestParam(required = false) Integer minBuiltYear,
+            @RequestParam(required = false) Integer maxBuiltYear,
+            @RequestParam(required = false) Boolean hasElevator,
+            @RequestParam(required = false) Boolean hasParking,
+            @RequestParam(required = false) Integer roomCount,
+            @RequestParam(required = false) Boolean petAllowed,
+            @RequestParam(required = false) Boolean lhAvailable,
+            @RequestParam(required = false) Double minArea,
+            @RequestParam(required = false) Double maxArea,
             @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) PropertyStatus status,
-            @RequestParam(required = false) PropertyType type,
-            @RequestParam(required = false) Long minPrice,
-            @RequestParam(required = false) Long maxPrice,
-            @RequestParam(required = false) Double minLat,
-            @RequestParam(required = false) Double maxLat,
-            @RequestParam(required = false) Double maxLng,
             @RequestParam(defaultValue = "500") int limit
     ) {
-        // 조건 조합
         Specification<Property> spec = Specification
-                .where(PropertySpecs.keywordContains(keyword))
-                .and(PropertySpecs.statusEq(status))
-                // 좌표 없는 건 지도 마커 불가 불가 -> 제외
+                .where(PropertySpecs.regionEq(region))
+                .and(PropertySpecs.dealTypeEq(dealType))
+                .and(PropertySpecs.depositBetween(minDeposit, maxDeposit))
+                .and(PropertySpecs.monthlyRentBetween(minMonthlyRent, maxMonthlyRent))
+                .and(PropertySpecs.builtYearBetween(minBuiltYear, maxBuiltYear))
+                .and(PropertySpecs.hasElevator(hasElevator))
+                .and(PropertySpecs.hasParking(hasParking))
+                .and(PropertySpecs.roomCountEq(roomCount))
+                .and(PropertySpecs.petAllowed(petAllowed))
+                .and(PropertySpecs.lhAvailable(lhAvailable))
+                .and(PropertySpecs.areaBetween(minArea, maxArea))
+                .and(PropertySpecs.keywordContains(keyword))
+                // ✅ 좌표 없는 매물은 지도 마커 불가 → 제외
                 .and((root, query, cb) -> cb.isNotNull(root.get("lat")))
                 .and((root, query, cb) -> cb.isNotNull(root.get("lng")));
 
-        int safeLimit = Math.min(Math.max(limit, 1), 2000); // 방어코드
+        int safeLimit = Math.min(Math.max(limit, 1), 2000); // 1~2000 방어
         var page = propertyRepository.findAll(spec, PageRequest.of(0, safeLimit));
 
         return page.getContent().stream()
@@ -86,19 +103,25 @@ public class PropertyApiController {
     public record PropertyMarkerDto(
             Long id,
             String title,
+            String address,
             Double lat,
             Double lng,
             PropertyStatus status,
-            DealType dealType
+            DealType dealType,
+            Long depositMan,
+            Long monthlyRentMan
     ) {
         static PropertyMarkerDto from(Property p) {
             return new PropertyMarkerDto(
                     p.getId(),
                     p.getTitle(),
+                    p.getAddress(),
                     p.getLat(),
                     p.getLng(),
                     p.getStatus(),
-                    p.getDealType()
+                    p.getDealType(),
+                    p.getDepositMan(),
+                    p.getMonthlyRentMan()
             );
         }
     }
