@@ -14,7 +14,7 @@
 
 <h1>매물 등록</h1>
 <p th:if="${error}" th:text="${error}" style="color:red;"></p>
-<form th:action="@{/properties}" method="post">
+<form th:action="@{/properties}" method="post" enctype="multipart/form-data">
 
     <!-- ================= 기본 정보 ================= -->
     <section>
@@ -117,6 +117,11 @@
         <label>건물주 연락처</label>
         <input type="text" name="ownerPhone"/>
     </section>
+
+    <div>
+        <label>사진</label><br/>
+        <input type="file" name="photos" multiple accept="image/*"/>
+    </div>
 
     <div style="margin-top:20px;">
         <button type="submit">저장</button>

@@ -111,6 +111,7 @@ public class Property {
     public String getOwnerPhone() { return ownerPhone; }
 
 
+
     // =========== 위치 업데이트 ========
     public void updateLocation(Double lat, Double lng) {
         this.lat = lat;
@@ -189,6 +190,16 @@ public class Property {
         return managementFee == null ? null : managementFee / 10_000;
     }
 
+
+    @OneToMany(mappedBy = "property", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("createdAt DESC")
+    private java.util.List<PropertyPhoto> photos = new java.util.ArrayList<>();
+
+    public java.util.List<PropertyPhoto> getPhotos() {return photos;}
+
+    public void addPhoto(PropertyPhoto photo) {
+        this.photos.add(photo);
+    }
 
 
 }

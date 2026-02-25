@@ -16,11 +16,27 @@
 
 <p>
     <a href="/properties">← 목록으로</a>
+    <a th:href="@{|/properties/${property.id}/edit|}">✏ 수정</a>
 </p>
+
+
 
 <p>
     <a th:href="@{|/map?propertyId=${property.id}|}">📍 지도에서 보기</a>
 </p>
+
+<section>
+    <h2>사진</h2>
+
+    <div th:if="${#lists.isEmpty(property.photos)}">사진 없음</div>
+
+    <div th:if="${!#lists.isEmpty(property.photos)}"
+         style="display:flex; gap:10px; flex-wrap:wrap;">
+        <img th:each="ph : ${property.photos}"
+             th:src="${ph.url}"
+             style="width:180px; height:140px; object-fit:cover; border:1px solid #ddd; border-radius:10px;" />
+    </div>
+</section>
 
 <section>
     <h2>기본 정보</h2>
@@ -107,6 +123,8 @@
     <p>
         <a th:href="@{|/properties/${property.id}/memos/new|}">+ 메모 추가</a>
     </p>
+
+
 </section>
 
 </body>

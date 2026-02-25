@@ -4,11 +4,15 @@ import kr.co.choi.property_manager.controller.dto.PropertyCreateRequest;
 import kr.co.choi.property_manager.domain.*;
 import kr.co.choi.property_manager.infra.NaverGeocodingClient;
 import kr.co.choi.property_manager.repository.MemoRepository;
+import kr.co.choi.property_manager.repository.PropertyPhotoRepository;
 import kr.co.choi.property_manager.repository.PropertyRepository;
+import kr.co.choi.property_manager.service.FileStorageService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import kr.co.choi.property_manager.infra.NaverGeocodingClient;
+import org.springframework.web.multipart.MultipartFile;
+
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,13 +24,19 @@ public class PropertyController {
     private final PropertyRepository propertyRepository;
     private final MemoRepository memoRepository;
     private final NaverGeocodingClient naverGeocodingClient;
+    private final FileStorageService fileStorageService;
+    private final PropertyPhotoRepository propertyPhotoRepository;
 
     public PropertyController(PropertyRepository propertyRepository,
                                 MemoRepository memoRepository,
-                            NaverGeocodingClient naverGeocodingClient) {
+                            NaverGeocodingClient naverGeocodingClient,
+                            FileStorageService fileStorageService,
+                              PropertyPhotoRepository propertyPhotoRepository) {
         this.propertyRepository = propertyRepository;
         this.memoRepository = memoRepository;
         this.naverGeocodingClient = naverGeocodingClient;
+        this.fileStorageService = fileStorageService;
+        this.propertyPhotoRepository = propertyPhotoRepository;
     }
 
     // 1) 리스트
@@ -39,40 +49,56 @@ public class PropertyController {
     // 2) 등록 폼
     @GetMapping("/new")
     public String newForm(Model model) {
-        model.addAttribute("types", PropertyType.values());
+        model.addAttribute("dealTypes", PropertyType.values());
         return "properties/new";
     }
 
     @PostMapping
     public String create(@ModelAttribute PropertyCreateRequest request,
+                         @RequestParam(value = "photos", required = false) java.util.List<MultipartFile> photos,
                          Model model) {
 
-       try {
-           // 1) 주소 검증 + 지오코딩 (실패하면 throw)
-           var point = naverGeocodingClient.geocodeOrThrow(request.getAddress());
+        try {
+            // 1) 주소 검증 + 지오코딩
+            var point = naverGeocodingClient.geocodeOrThrow(request.getAddress());
 
-           // 2) 엔티티 생성(빈 객체 ) + 값 적용
-           Property property = new Property();
-           property.updateAll(request);
+            // 2) 엔티티 생성 + 값 세팅
+            Property property = new Property();
+            property.updateAll(request);
 
-           // 3) 좌표 저장
-           property.updateLocation(point.lat(), point.lng());
+            // 3) 좌표 저장
+            property.updateLocation(point.lat(), point.lng());
 
-           // 4) 저장
-           propertyRepository.save(property);
+            // 4) 먼저 property 저장 (id 확보)
+            propertyRepository.save(property);
 
-           return "redirect:/properties";
+            // 5) 사진 저장 (있으면)
+            if (photos != null) {
+                for (MultipartFile file : photos) {
+                    if (file == null || file.isEmpty()) continue;
 
-       } catch (Exception e) {
+                    var stored = fileStorageService.store(file);
+                    var photo = new PropertyPhoto(
+                            property,
+                            stored.originalName(),
+                            stored.storedName(),
+                            stored.url()
+                    );
 
-           e.printStackTrace();
-           model.addAttribute("error",e.getMessage());
+                    property.addPhoto(photo);
+                    propertyPhotoRepository.save(photo);
+                }
+            }
 
-           // 폼 제랜더링용
-           model.addAttribute("dealTypes", DealType.values());
-           return "properties/new";
-       }
+            return "redirect:/properties/" + property.getId();
 
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("error", e.getMessage());
+
+            model.addAttribute("dealTypes", DealType.values());
+            return "properties/new";
+        }
     }
 
     // 4) 상세 (+ 메모 목록)
@@ -102,15 +128,144 @@ public class PropertyController {
         return "redirect:/properties/" + id;
     }
 
+    @GetMapping("/{id}/memos/new")
+    public String newMemoForm(@PathVariable Long id, Model model) {
+        model.addAttribute("propertyId",id);
+        return "memos/new";
+    }
+
+
 
     // 5) 삭제
+    @PostMapping("/{id}/delete")
     public String delete(@PathVariable Long id) {
         propertyRepository.deleteById(id);
         return "redirect:/properties";
     }
 
+    // 6) 수정
+
+    @GetMapping("/{id}/edit")
+    public String editForm(@PathVariable Long id, Model model) {
+        Property property = propertyRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Property not found : " + id));
+
+        model.addAttribute("property",property);
+
+        // ✅ Property -> DTO 변환 (폼에 값 채우기)
+        PropertyCreateRequest form = new PropertyCreateRequest();
+        form.setTitle(property.getTitle());
+        form.setRegion(property.getRegion());
+        form.setBuildingName(property.getBuildingName());
+        form.setAddress(property.getAddress());
+        form.setLotAddress(property.getLotAddress());
+        form.setUnitNumber(property.getUnitNumber());
+        form.setBuiltYear(property.getBuiltYear());
+        form.setArea(property.getArea());
+
+        form.setDealType(property.getDealType());
+        form.setDeposit(property.getDepositMan());          // ✅ 폼은 만원 단위
+        form.setMonthlyRent(property.getMonthlyRentMan());
+        form.setManagementFee(property.getManagementFeeMan());
+
+        form.setHasElevator(property.getHasElevator());
+        form.setHasParking(property.getHasParking());
+        form.setRoomCount(property.getRoomCount());
+        form.setPetAllowed(property.getPetAllowed());
+        form.setLhAvailable(property.getLhAvailable());
+
+        form.setEntrancePassword(property.getEntrancePassword());
+        form.setHousePassword(property.getHousePassword());
+        form.setTenantPhone(property.getTenantPhone());
+        form.setOwnerPhone(property.getOwnerPhone());
+
+        model.addAttribute("propertyId", id);
+        model.addAttribute("form", form);
+        model.addAttribute("dealTypes", DealType.values());
+        return "properties/edit";
+    }
+
+    @PostMapping("/{id}")
+    public String update(@PathVariable Long id,
+                         @ModelAttribute("form") PropertyCreateRequest request,
+                         @RequestParam(value="photos", required=false) java.util.List<org.springframework.web.multipart.MultipartFile> photos,
+                         Model model) {
+        try {
+            Property property = propertyRepository.findById(id)
+                    .orElseThrow(()-> new IllegalArgumentException("Property not found : " + id));
+
+            // 주소가 바뀌면 지오코딩 다시
+            if (request.getAddress() != null && !request.getAddress().equals(property.getAddress())) {
+                var point = naverGeocodingClient.geocodeOrThrow(request.getAddress());
+                property.updateLocation(point.lat(), point.lng());
+            }
+
+            // 나머지 값 갱신
+            property.updateAll(request);
+
+            propertyRepository.save(property);
+
+            if (photos != null) {
+                for(var file : photos) {
+                    if (file == null || file.isEmpty()) continue;
+
+                    var stored = fileStorageService.store(file);
+
+                    var photo = new PropertyPhoto(
+                            property,
+                            stored.originalName(),
+                            stored.storedName(),
+                            stored.url()
+
+                    );
+
+                    property.addPhoto(photo);
+                    propertyPhotoRepository.save(photo);
+                }
+            }
 
 
+            return "redirect:/properties/" + id;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            Property property = propertyRepository.findById(id).orElse(null);
+
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("property", property);
+            model.addAttribute("form", request);
+            model.addAttribute("dealTypes", DealType.values());
+            model.addAttribute("propertyId", id);
+
+
+
+            return "properties/edit";
+
+        }
+    }
+
+    // 사진 삭제 엔드포인트
+    @PostMapping("/{propertyId}/photos/{photoId}/delete")
+    public String deletePhoto(@PathVariable Long propertyId,
+                              @PathVariable Long photoId) {
+
+        PropertyPhoto photo = propertyPhotoRepository.findById(photoId)
+                .orElseThrow(() -> new IllegalArgumentException("Photo not found : " + photoId));
+
+        // 다른 매물의 사진을 지우는 실수 방지
+        if (!photo.getProperty().getId().equals(propertyId)) {
+            throw new IllegalArgumentException("잘못된 요청입니다.");
+        }
+
+        // 1) DB 삭제
+        propertyPhotoRepository.delete(photo);
+
+        // 2) (추천) 실제 파일도 삭제하고 싶으면 아래 추가
+        // fileStorageService.deleteByUrl(photo.getUrl());
+
+        return "redirect:/properties/" + propertyId + "/edit";
+    }
 
 
 }

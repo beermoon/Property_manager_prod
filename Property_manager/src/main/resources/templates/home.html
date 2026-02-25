@@ -204,7 +204,12 @@
         </div>
 
         <div class="group">
+
             <h3>기본 조건</h3>
+            <div class="field" style="margin-bottom:12px;">
+                <label>🔍 키워드</label>
+                <input id="keyword" type="text" placeholder="제목, 주소, 건물명 검색" />
+            </div>
             <div class="grid two">
                 <div class="field">
                     <label>구역</label>
@@ -371,6 +376,8 @@
     function buildQuery() {
         const params = new URLSearchParams();
 
+        addParam(params, 'keyword', readValue('keyword'));
+
         addParam(params, 'region', readValue('region'));
         addParam(params, 'dealType', readValue('dealType'));
 
@@ -396,6 +403,7 @@
 
     function hasAnyFilter() {
         const ids = [
+            'keyword',
             'region','dealType',
             'minDeposit','maxDeposit','minMonthlyRent','maxMonthlyRent',
             'minBuiltYear','maxBuiltYear',

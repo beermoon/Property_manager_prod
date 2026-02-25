@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>매물 수정</title>
+    <style>
+        section { margin-bottom: 30px; }
+        h2 { border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+        label { display:block; margin-top:10px; }
+        input, select { width: 300px; padding:5px; }
+    </style>
+</head>
+<body>
+
+<h1>매물 수정</h1>
+<p th:if="${error}" th:text="${error}" style="color:red;"></p>
+
+<form th:action="@{|/properties/${propertyId}|}" method="post" enctype="multipart/form-data">
+
+    <!-- ================= 기본 정보 ================= -->
+    <section>
+        <h2>기본 정보</h2>
+
+        <div th:each="ph : ${property.photos}" style="text-align:center;">
+            <img th:src="${ph.url}"
+                 style="width:160px; height:120px; object-fit:cover; border:1px solid #ddd; border-radius:10px;">
+
+
+            <button type="submit"
+                    th:formaction="@{|/properties/${propertyId}/photos/${ph.id}/delete|}"
+                    formmethod="post"
+                    style="margin-top:6px;">
+                사진 삭제
+            </button>
+        </div>
+
+        <label>제목 *</label>
+        <input type="text" name="title" th:value="${form.title}" required/>
+
+        <label>구역</label>
+        <input type="text" name="region" th:value="${form.region}"/>
+
+        <label>건물명</label>
+        <input type="text" name="buildingName" th:value="${form.buildingName}"/>
+
+        <label>도로명 주소 *</label>
+        <input type="text" name="address" th:value="${form.address}" required/>
+
+        <label>지번 주소</label>
+        <input type="text" name="lotAddress" th:value="${form.lotAddress}"/>
+
+        <label>호수</label>
+        <input type="text" name="unitNumber" th:value="${form.unitNumber}"/>
+
+        <label>준공연도</label>
+        <input type="number" name="builtYear" th:value="${form.builtYear}"/>
+
+        <label>평수</label>
+        <input type="number" step="0.1" name="area" th:value="${form.area}"/>
+    </section>
+
+    <!-- ================= 거래 정보 ================= -->
+    <section>
+        <h2>거래 정보</h2>
+
+        <label>거래 유형</label>
+        <select name="dealType">
+            <option value="MONTHLY" th:selected="${form.dealType != null and form.dealType.name() == 'MONTHLY'}">월세</option>
+            <option value="JEONSE"  th:selected="${form.dealType != null and form.dealType.name() == 'JEONSE'}">전세</option>
+        </select>
+
+        <label>보증금 (만원)</label>
+        <input type="number" name="deposit" th:value="${form.deposit}"/>
+
+        <label>월세 (만원)</label>
+        <input type="number" name="monthlyRent" th:value="${form.monthlyRent}"/>
+
+        <label>관리비 (만원)</label>
+        <input type="number" name="managementFee" th:value="${form.managementFee}"/>
+        <p style="color:gray; font-size:13px;">※ 금액은 “만원 단위”로 입력하세요. 예) 보증금 2000 / 월세 50</p>
+    </section>
+
+    <!-- ================= 옵션 ================= -->
+    <section>
+        <h2>옵션</h2>
+
+        <label>엘리베이터</label>
+        <select name="hasElevator">
+            <option value="" th:selected="${form.hasElevator == null}">선택안함</option>
+            <option value="true" th:selected="${form.hasElevator == true}">있음</option>
+            <option value="false" th:selected="${form.hasElevator == false}">없음</option>
+        </select>
+
+        <label>주차</label>
+        <select name="hasParking">
+            <option value="" th:selected="${form.hasParking == null}">선택안함</option>
+            <option value="true" th:selected="${form.hasParking == true}">가능</option>
+            <option value="false" th:selected="${form.hasParking == false}">불가능</option>
+        </select>
+
+        <label>룸 개수 (최대 4)</label>
+        <input type="number" name="roomCount" min="0" max="4" th:value="${form.roomCount}"/>
+
+        <label>반려동물</label>
+        <select name="petAllowed">
+            <option value="" th:selected="${form.petAllowed == null}">선택안함</option>
+            <option value="true" th:selected="${form.petAllowed == true}">가능</option>
+            <option value="false" th:selected="${form.petAllowed == false}">불가능</option>
+        </select>
+
+        <label>LH 여부</label>
+        <select name="lhAvailable">
+            <option value="" th:selected="${form.lhAvailable == null}">선택안함</option>
+            <option value="true" th:selected="${form.lhAvailable == true}">LH</option>
+            <option value="false" th:selected="${form.lhAvailable == false}">일반</option>
+        </select>
+    </section>
+
+    <!-- ================= 보안 / 연락 ================= -->
+    <section>
+        <h2>보안 / 연락 정보</h2>
+
+        <label>공동현관 비밀번호</label>
+        <input name="entrancePassword" th:value="${form.entrancePassword}"/>
+
+        <label>집 비밀번호</label>
+        <input name="housePassword" th:value="${form.housePassword}"/>
+
+        <label>세입자 연락처</label>
+        <input type="text" name="tenantPhone" th:value="${form.tenantPhone}"/>
+
+        <label>건물주 연락처</label>
+        <input type="text" name="ownerPhone" th:value="${form.ownerPhone}"/>
+    </section>
+
+    <input type="file" name="photos" multiple accept="image/*"/>
+
+    <div style="margin-top:20px;">
+        <button type="submit">수정 저장</button>
+        <a th:href="@{|/properties/${propertyId}|}">취소</a>
+    </div>
+</form>
+
+</body>
+</html>
