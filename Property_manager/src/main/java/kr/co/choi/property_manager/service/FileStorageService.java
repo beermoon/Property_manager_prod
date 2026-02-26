@@ -49,15 +49,14 @@ public class FileStorageService {
     public void deleteByUrl(String url) {
         if (url == null || url.isBlank()) return;
 
-        String filename = url.substring(url.lastIndexOf('/') + 1);
-
-        Path path = Paths.get(uploadDir).resolve(filename).normalize();
+        String filename = url.replaceFirst("^/(upload|uploads)/", "");
+        Path path = rootDir.resolve(filename).normalize();
 
         try {
-            Files.deleteIfExists(path);
-
+            boolean deleted = Files.deleteIfExists(path);
+            System.out.println("[FILE-DELETE] " + path + " deleted=" + deleted);
         } catch (IOException e) {
-            // 파일 삭제 실패는 로깅만 (서비스 계속)
+            System.out.println("[FILE-DELETE] FAIL " + path + " err=" + e.getMessage());
             e.printStackTrace();
         }
     }

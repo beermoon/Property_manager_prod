@@ -50,6 +50,7 @@ public class PropertyController {
     @GetMapping("/new")
     public String newForm(Model model) {
         model.addAttribute("dealTypes", PropertyType.values());
+        model.addAttribute("statuses", PropertyStatus.values());
         return "properties/new";
     }
 
@@ -128,6 +129,25 @@ public class PropertyController {
         return "redirect:/properties/" + id;
     }
 
+    // 메모 삭제
+    @PostMapping("/{propertyId}/memos/{memoId}/delete")
+    public String deleteMemo(@PathVariable Long propertyId,
+                             @PathVariable Long memoId) {
+
+        Memo memo = memoRepository.findById(memoId)
+                .orElseThrow(() -> new IllegalArgumentException("Memo not found: " + memoId));
+
+        if (memo.getProperty() == null || !memo.getProperty().getId().equals(propertyId)) {
+            throw new IllegalArgumentException("잘못된 요청입니다");
+        }
+
+        memoRepository.delete(memo);
+
+        return "redirect:/properties/" + propertyId;
+
+    }
+
+
     @GetMapping("/{id}/memos/new")
     public String newMemoForm(@PathVariable Long id, Model model) {
         model.addAttribute("propertyId",id);
@@ -167,6 +187,7 @@ public class PropertyController {
         form.setDeposit(property.getDepositMan());          // ✅ 폼은 만원 단위
         form.setMonthlyRent(property.getMonthlyRentMan());
         form.setManagementFee(property.getManagementFeeMan());
+        form.setStatus(property.getStatus());
 
         form.setHasElevator(property.getHasElevator());
         form.setHasParking(property.getHasParking());
@@ -178,6 +199,8 @@ public class PropertyController {
         form.setHousePassword(property.getHousePassword());
         form.setTenantPhone(property.getTenantPhone());
         form.setOwnerPhone(property.getOwnerPhone());
+
+
 
         model.addAttribute("propertyId", id);
         model.addAttribute("form", form);
@@ -261,11 +284,16 @@ public class PropertyController {
         // 1) DB 삭제
         propertyPhotoRepository.delete(photo);
 
-        // 2) (추천) 실제 파일도 삭제하고 싶으면 아래 추가
-        // fileStorageService.deleteByUrl(photo.getUrl());
+         //2) ( 실제 파일도 삭제하고 싶으면 아래 추가
+         fileStorageService.deleteByUrl(photo.getUrl());
 
         return "redirect:/properties/" + propertyId + "/edit";
     }
+
+
+
+
+
 
 
 }

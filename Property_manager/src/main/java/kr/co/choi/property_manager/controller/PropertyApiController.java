@@ -57,6 +57,7 @@ public class PropertyApiController {
 
     @GetMapping("/properties")
     public List<PropertyMarkerDto> markers(
+            @RequestParam(required = false) Long id,
             @RequestParam(required = false) String region,
             @RequestParam(required = false) DealType dealType,
             @RequestParam(required = false) Long minDeposit,
@@ -75,6 +76,15 @@ public class PropertyApiController {
             @RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "500") int limit
     ) {
+
+        if (id != null) {
+            return propertyRepository.findById(id)
+                    .filter(p -> p.getLat() != null && p.getLng() != null)
+                    .map(p -> java.util.List.of(PropertyMarkerDto.from(p)))
+                    .orElseGet(java.util.List::of);
+        }
+
+
         Specification<Property> spec = Specification
                 .where(PropertySpecs.regionEq(region))
                 .and(PropertySpecs.dealTypeEq(dealType))
@@ -108,6 +118,8 @@ public class PropertyApiController {
             Double lng,
             PropertyStatus status,
             DealType dealType,
+            String dealTypeLabel,
+            String statusLabel,
             Long depositMan,
             Long monthlyRentMan
     ) {
@@ -120,6 +132,8 @@ public class PropertyApiController {
                     p.getLng(),
                     p.getStatus(),
                     p.getDealType(),
+                    p.getDealType() == null ? "" : p.getDealType().getLabel(),
+                    p.getStatus() == null ? "" : p.getStatus().getLabel(),
                     p.getDepositMan(),
                     p.getMonthlyRentMan()
             );

@@ -222,7 +222,6 @@
             <button class="btn" type="button" onclick="applyFilter()">검색</button>
             <button class="btn" type="button" onclick="resetFilter()">초기화</button>
         </div>
-        <div class="hint">※ 지금은 프론트에서만 필터링(표시)합니다. 필요하면 서버 검색으로 확장할 수 있어요.</div>
     </div>
 
     <div class="table-wrap">
@@ -253,7 +252,7 @@
 
                 <td data-label="유형">
                     <span class="badge"
-                          th:text="${p.dealType}">MONTHLY</span>
+                          th:text="${p.dealType.label}">월세</span>
                 </td>
 
                 <td data-label="금액(만)" class="mono">
@@ -269,7 +268,7 @@
                 <td data-label="상태">
                     <span class="badge"
                           th:classappend="${p.status.name() == 'VACANT'} ? ' green' : ' gray'"
-                          th:text="${p.status}">VACANT</span>
+                          th:text="${p.status.label}">공실</span>
                 </td>
 
                 <td data-label="액션">

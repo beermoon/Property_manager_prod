@@ -184,6 +184,37 @@
             overflow:hidden;
             background:#fff;
         }
+
+
+
+             /* ✅ InfoWindow 닫기 버튼: 텍스트 대신 선 2개로 X 만들기 */
+         .iw-close{
+             position:absolute;
+             right:8px; top:8px;
+             width:26px; height:26px;
+             border-radius:8px;
+             border:1px solid #e5e7eb;
+             background:#fff;
+             cursor:pointer;
+             padding:0;
+         }
+        .iw-close:hover{ background:#f3f4f6; }
+        .iw-close:active{ transform: scale(0.98); }
+        .iw-close:focus{ outline:none; box-shadow: 0 0 0 3px rgba(17,24,39,0.08); }
+
+        .iw-close::before,
+        .iw-close::after{
+            content:"";
+            position:absolute;
+            left:50%; top:50%;
+            width:12px; height:2px;
+            background:#6b7280;
+            border-radius:2px;
+            transform-origin:center;
+        }
+        .iw-close::before{ transform: translate(-50%,-50%) rotate(45deg); }
+        .iw-close::after { transform: translate(-50%,-50%) rotate(-45deg); }
+    </style>
     </style>
 </head>
 <body>
@@ -357,9 +388,25 @@
     function clearMarkers() {
         markers.forEach(m => m.setMap(null));
         markers = [];
+        infoWindows.forEach(iw => iw.close());
         infoWindows = [];
         markerMap.clear();
     }
+
+    // ✅ 인포윈도우 전부 닫기
+    function closeAllInfo() {
+        infoWindows.forEach(iw => iw.close());
+    }
+
+    // ✅ 지도 빈 곳 클릭하면 상태창 닫기
+    naver.maps.Event.addListener(map, 'click', () => {
+        closeAllInfo();
+    });
+
+    // ✅ ESC 키로 닫기
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeAllInfo();
+    });
 
     function readValue(id) {
         const el = document.getElementById(id);
@@ -377,24 +424,19 @@
         const params = new URLSearchParams();
 
         addParam(params, 'keyword', readValue('keyword'));
-
         addParam(params, 'region', readValue('region'));
         addParam(params, 'dealType', readValue('dealType'));
-
         addParam(params, 'minDeposit', readValue('minDeposit'));
         addParam(params, 'maxDeposit', readValue('maxDeposit'));
         addParam(params, 'minMonthlyRent', readValue('minMonthlyRent'));
         addParam(params, 'maxMonthlyRent', readValue('maxMonthlyRent'));
-
         addParam(params, 'minBuiltYear', readValue('minBuiltYear'));
         addParam(params, 'maxBuiltYear', readValue('maxBuiltYear'));
-
         addParam(params, 'roomCount', readValue('roomCount'));
         addParam(params, 'hasElevator', readValue('hasElevator'));
         addParam(params, 'hasParking', readValue('hasParking'));
         addParam(params, 'petAllowed', readValue('petAllowed'));
         addParam(params, 'lhAvailable', readValue('lhAvailable'));
-
         addParam(params, 'minArea', readValue('minArea'));
         addParam(params, 'maxArea', readValue('maxArea'));
 
@@ -413,7 +455,110 @@
         return ids.some(id => readValue(id) !== '');
     }
 
+    // ✅ 인포윈도우 내용: X 버튼 포함 (닫기 버튼은 class="iw-close")
+    function buildInfoHtml(p) {
+        const dealLine =
+            (p.dealType === 'MONTHLY')
+                ? ` · 보/월 ${p.depositMan ?? '-'} / ${p.monthlyRentMan ?? '-'}만`
+                : (p.dealType === 'JEONSE')
+                    ? ` · 전세 ${p.depositMan ?? '-'}만`
+                    : '';
+
+        return `
+  <div style="position:relative; padding:10px 34px 10px 10px; min-width:240px;">
+    <button type="button" class="iw-close" aria-label="닫기"></button>
+
+    <div style="font-weight:700; margin-bottom:6px;">${p.title ?? ''}</div>
+    <div style="margin:6px 0; color:#666; font-size:12px;">
+      ${p.address ?? ''}
+    </div>
+    <div style="margin:6px 0; font-size:12px; color:#444;">
+      ${(p.dealTypeLabel ?? p.dealType ?? '')} · ${(p.statusLabel ?? p.status ?? '')}
+      ${dealLine}
+    </div>
+    <a href="/properties/${p.id}">상세보기</a>
+  </div>
+`;
+    }
+
     async function loadMarkers() {
+
+        // ===============================
+        // A) 상세 -> 지도에서 보기 (focusId)
+        // ===============================
+        if (focusId != null) {
+            clearMarkers();
+            setHint('선택한 매물을 불러오는 중...');
+
+            try {
+                const url = `/api/properties?id=${encodeURIComponent(focusId)}`;
+                const res = await fetch(url);
+                const list = await res.json();
+
+                clearMarkers();
+                setHint(`표시된 매물: ${Array.isArray(list) ? list.length : 0}건`);
+
+                if (!Array.isArray(list) || list.length === 0) return;
+
+                const p0 = list[0];
+                if (p0.lat != null && p0.lng != null) {
+                    map.setCenter(new naver.maps.LatLng(p0.lat, p0.lng));
+                    map.setZoom(16);
+                }
+
+                list.forEach(p => {
+                    if (p.lat == null || p.lng == null) return;
+
+                    const pid = Number(p.id);
+                    const latlng = new naver.maps.LatLng(p.lat, p.lng);
+                    const marker = new naver.maps.Marker({ position: latlng, map });
+
+                    const info = new naver.maps.InfoWindow({
+                        content: buildInfoHtml(p)
+                    });
+
+                    // ✅ 마커 클릭: 토글 + 다른 창 닫기
+                    naver.maps.Event.addListener(marker, 'click', () => {
+                        if (info.getMap()) { info.close(); return; }
+                        closeAllInfo();
+                        info.open(map, marker);
+
+                        // ✅ InfoWindow DOM이 만들어진 뒤 닫기 버튼 이벤트 연결
+                        setTimeout(() => {
+                            const root = info.getElement();
+                            if (!root) return;
+                            const btn = root.querySelector('.iw-close');
+                            if (btn) btn.onclick = () => info.close();
+                        }, 0);
+                    });
+
+                    markers.push(marker);
+                    infoWindows.push(info);
+                    markerMap.set(pid, { marker, info, latlng });
+                });
+
+                // 자동 오픈
+                const target = markerMap.get(Number(p0.id));
+                if (target) {
+                    closeAllInfo();
+                    target.info.open(map, target.marker);
+                    setTimeout(() => {
+                        const root = target.info.getElement();
+                        const btn = root?.querySelector('.iw-close');
+                        if (btn) btn.onclick = () => target.info.close();
+                    }, 0);
+                }
+
+            } catch (e) {
+                console.error(e);
+                setHint('선택한 매물 로딩 실패');
+            }
+            return;
+        }
+
+        // ===============================
+        // B) 필터 검색
+        // ===============================
         if (!hasAnyFilter()) {
             clearMarkers();
             setHint('필터를 설정하고 [적용]을 누르면 매물이 표시됩니다.');
@@ -428,49 +573,46 @@
             const list = await res.json();
 
             clearMarkers();
-            setHint(`표시된 매물: ${list.length}건`);
+            setHint(`표시된 매물: ${Array.isArray(list) ? list.length : 0}건`);
+
+            if (!Array.isArray(list) || list.length === 0) return;
 
             list.forEach(p => {
                 if (p.lat == null || p.lng == null) return;
 
+                const pid = Number(p.id);
                 const latlng = new naver.maps.LatLng(p.lat, p.lng);
-
-                const marker = new naver.maps.Marker({
-                    position: latlng,
-                    map
-                });
+                const marker = new naver.maps.Marker({ position: latlng, map });
 
                 const info = new naver.maps.InfoWindow({
-                    content: `
-            <div style="padding:10px; min-width:220px;">
-              <b>${p.title ?? ''}</b><br/>
-              <div style="margin:6px 0; color:#666; font-size:12px;">
-                ${p.address ?? ''}
-              </div>
-              <a href="/properties/${p.id}">상세보기</a>
-            </div>
-          `
+                    content: buildInfoHtml(p)
                 });
 
+                // ✅ 마커 클릭: 토글 + 다른 창 닫기
                 naver.maps.Event.addListener(marker, 'click', () => {
-                    infoWindows.forEach(iw => iw.close());
+                    if (info.getMap()) { info.close(); return; }
+                    closeAllInfo();
                     info.open(map, marker);
+
+                    setTimeout(() => {
+                        const root = info.getElement();
+                        if (!root) return;
+                        const btn = root.querySelector('.iw-close');
+                        if (btn) btn.onclick = () => info.close();
+                    }, 0);
                 });
 
                 markers.push(marker);
                 infoWindows.push(info);
-                markerMap.set(p.id, { marker, info, latlng });
+                markerMap.set(pid, { marker, info, latlng });
             });
 
-            if (focusId != null && markerMap.has(Number(focusId))) {
-                const target = markerMap.get(Number(focusId));
-                map.setCenter(target.latlng);
-                map.setZoom(16);
-                infoWindows.forEach(iw => iw.close());
-                target.info.open(map, target.marker);
-            } else if (list.length > 0) {
-                map.setCenter(new naver.maps.LatLng(list[0].lat, list[0].lng));
+            // 결과 첫번째로 이동(선택)
+            const p0 = list[0];
+            if (p0.lat != null && p0.lng != null) {
+                map.setCenter(new naver.maps.LatLng(p0.lat, p0.lng));
             }
+
         } catch (err) {
             console.error(err);
             setHint('마커 로딩 실패');
@@ -479,7 +621,7 @@
 
     function resetFilters() {
         const ids = [
-            'region','dealType',
+            'keyword','region','dealType',
             'minDeposit','maxDeposit','minMonthlyRent','maxMonthlyRent',
             'minBuiltYear','maxBuiltYear',
             'roomCount','hasElevator','hasParking','petAllowed','lhAvailable',
@@ -508,9 +650,14 @@
         }
     });
 
-    // 최초 로딩: 0개 상태
-    clearMarkers();
-    setHint('필터를 설정하고 [적용]을 누르면 매물이 표시됩니다.');
+    // 최초 로딩: focusId면 1건 표시, 아니면 0개
+    if (focusId != null) {
+        loadMarkers();
+    } else {
+        clearMarkers();
+        setHint('필터를 설정하고 [적용]을 누르면 매물이 표시됩니다.');
+    }
 </script>
 </body>
 </html>
+

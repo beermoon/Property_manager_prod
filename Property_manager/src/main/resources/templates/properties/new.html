@@ -2,133 +2,221 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>매물 등록</title>
     <style>
-        section { margin-bottom: 30px; }
-        h2 { border-bottom: 1px solid #ccc; padding-bottom: 5px; }
-        label { display:block; margin-top:10px; }
-        input, select { width: 300px; padding:5px; }
+        :root{
+            --border:#e5e7eb; --text:#111827; --muted:#6b7280;
+            --bg:#ffffff; --panel:#f9fafb; --primary:#111827;
+            --danger:#ef4444;
+        }
+        *{box-sizing:border-box}
+        body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;color:var(--text);background:var(--bg)}
+        .wrap{max-width:1100px;margin:0 auto;padding:18px 16px 28px}
+        .topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
+        .topbar h1{margin:0;font-size:20px;letter-spacing:-.2px}
+        .btn{display:inline-flex;align-items:center;gap:6px;padding:9px 12px;border-radius:10px;border:1px solid var(--border);background:#fff;color:var(--text);text-decoration:none;font-size:13px;cursor:pointer}
+        .btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}
+        .btn.ghost{background:#fff}
+        .btn.danger{border-color:#fecaca;color:var(--danger)}
+        .alert{padding:10px 12px;border:1px solid #fecaca;background:#fff1f2;color:#991b1b;border-radius:12px;margin-bottom:12px;font-size:13px}
+        .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+        @media (max-width:720px){.grid{grid-template-columns:1fr}}
+        .card{border:1px solid var(--border);background:var(--panel);border-radius:14px;padding:14px;margin-bottom:12px}
+        .card h2{margin:0 0 10px 0;font-size:14px;color:#374151}
+        .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+        input,select,textarea{
+            width:100%;padding:10px 10px;border-radius:10px;border:1px solid var(--border);
+            background:#fff;font-size:13px;outline:none
+        }
+        input:focus,select:focus,textarea:focus{border-color:#c7cdd6;box-shadow:0 0 0 3px rgba(17,24,39,.06)}
+        .help{margin-top:6px;font-size:12px;color:var(--muted)}
+        .actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
+        .range{display:grid;grid-template-columns:1fr 20px 1fr;gap:8px;align-items:center}
+        .sep{color:var(--muted);text-align:center;font-size:12px}
+        .inline{display:flex;gap:8px;align-items:center}
     </style>
 </head>
 <body>
+<div class="wrap">
 
-<h1>매물 등록</h1>
-<p th:if="${error}" th:text="${error}" style="color:red;"></p>
-<form th:action="@{/properties}" method="post" enctype="multipart/form-data">
-
-    <!-- ================= 기본 정보 ================= -->
-    <section>
-        <h2>기본 정보</h2>
-
-        <label>제목 *</label>
-        <input type="text" name="title" required/>
-
-        <label>구역</label>
-        <input type="text" name="region"/>
-
-        <label>건물명</label>
-        <input type="text" name="buildingName"/>
-
-        <label>도로명 주소 *</label>
-        <input type="text" name="address" required/>
-
-        <label>지번 주소</label>
-        <input type="text" name="lotAddress"/>
-
-        <label>호수</label>
-        <input type="text" name="unitNumber"/>
-
-        <label>준공연도</label>
-        <input type="number" name="builtYear"/>
-
-        <label>평수</label>
-        <input type="number" step="0.1" name="area"/>
-    </section>
-
-    <!-- ================= 거래 정보 ================= -->
-    <section>
-        <h2>거래 정보</h2>
-
-        <label>거래 유형</label>
-        <select name="dealType">
-            <option value="MONTHLY" selected>월세</option>
-            <option value="JEONSE">전세</option>
-        </select>
-
-        <label>보증금 (만원)</label>
-        <input type="number" name="deposit"/>
-
-        <label>월세 (만원)</label>
-        <input type="number" name="monthlyRent"/>
-
-        <label>관리비 (만원)</label>
-        <input type="number" name="managementFee"/>
-    </section>
-
-    <!-- ================= 옵션 ================= -->
-    <section>
-        <h2>옵션</h2>
-
-        <label>엘리베이터</label>
-        <select name="hasElevator">
-            <option value="">선택안함</option>
-            <option value="true">있음</option>
-            <option value="false">없음</option>
-        </select>
-
-        <label>주차</label>
-        <select name="hasParking">
-            <option value="">선택안함</option>
-            <option value="true">가능</option>
-            <option value="false">불가능</option>
-        </select>
-
-        <label>룸 개수 (최대 4)</label>
-        <input type="number" name="roomCount" min="0" max="4"/>
-
-        <label>반려동물</label>
-        <select name="petAllowed">
-            <option value="">선택안함</option>
-            <option value="true">가능</option>
-            <option value="false">불가능</option>
-        </select>
-
-        <label>LH 가능 여부</label>
-        <select name="lhAvailable">
-            <option value="">선택안함</option>
-            <option value="true">가능</option>
-            <option value="false">불가능</option>
-        </select>
-    </section>
-
-    <!-- ================= 보안 / 연락 ================= -->
-    <section>
-        <h2>보안 / 연락 정보</h2>
-
-        <label>공동현관 비밀번호</label>
-        <input name="entrancePassword"/>
-
-        <label>집 비밀번호</label>
-        <input name="housePassword"/>
-
-        <label>세입자 연락처</label>
-        <input type="text" name="tenantPhone"/>
-
-        <label>건물주 연락처</label>
-        <input type="text" name="ownerPhone"/>
-    </section>
-
-    <div>
-        <label>사진</label><br/>
-        <input type="file" name="photos" multiple accept="image/*"/>
+    <div class="topbar">
+        <h1>매물 등록</h1>
+        <div class="inline">
+            <a class="btn ghost" href="/properties">← 목록</a>
+            <a class="btn ghost" href="/">🗺️ 지도</a>
+        </div>
     </div>
 
-    <div style="margin-top:20px;">
-        <button type="submit">저장</button>
-        <a href="/properties">취소</a>
-    </div>
+    <div th:if="${error}" class="alert" th:text="${error}">에러 메시지</div>
 
-</form>
+    <form th:action="@{/properties}" method="post" enctype="multipart/form-data">
 
+        <div class="card">
+            <h2>기본 정보</h2>
+            <div class="grid">
+                <div class="field">
+                    <label>제목 *</label>
+                    <input type="text" name="title" required placeholder="예: 아시아선수촌 101동" />
+                </div>
+                <div class="field">
+                    <label>구역</label>
+                    <input type="text" name="region" placeholder="예: 해운대" />
+                </div>
+
+                <div class="field">
+                    <label>건물명</label>
+                    <input type="text" name="buildingName" placeholder="예: 아시아선수촌아파트" />
+                </div>
+                <div class="field">
+                    <label>호수</label>
+                    <input type="text" name="unitNumber" placeholder="예: 101-1203" />
+                </div>
+
+                <div class="field">
+                    <label>도로명 주소 *</label>
+                    <input type="text" name="address" required placeholder="예: 부산 해운대구 센텀동로 45" />
+                    <div class="help">※ 도로명/지번/우편번호 중 하나를 정확히 입력해야 좌표가 찍혀요.</div>
+                </div>
+                <div class="field">
+                    <label>지번 주소</label>
+                    <input type="text" name="lotAddress" placeholder="예: 부산 해운대구 하단동 526-17" />
+                </div>
+
+                <div class="field">
+                    <label>준공연도</label>
+                    <input type="number" name="builtYear" placeholder="예: 2012" />
+                </div>
+                <div class="field">
+                    <label>평수</label>
+                    <input type="number" step="0.1" name="area" placeholder="예: 23.5" />
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>거래 정보</h2>
+            <div class="grid">
+                <div class="field">
+                    <label>거래 유형</label>
+                    <select name="dealType">
+                        <option value="MONTHLY" selected>월세</option>
+                        <option value="JEONSE">전세</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label>상태</label>
+                    <select name="status">
+                        <option value="VACANT" selected>공실</option>
+                        <option value="CONTRACTED">세입자 있음(계약중)</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label>보증금 (만원)</label>
+                    <input type="number" name="deposit" placeholder="예: 2000" />
+                </div>
+                <div class="field">
+                    <label>월세 (만원)</label>
+                    <input type="number" name="monthlyRent" placeholder="예: 50" />
+                </div>
+
+                <div class="field">
+                    <label>관리비 (만원)</label>
+                    <input type="number" name="managementFee" placeholder="예: 10" />
+                    <div class="help">※ 금액은 “만원 단위”로 입력</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>옵션</h2>
+            <div class="grid">
+                <div class="field">
+                    <label>룸 개수 (최대 4)</label>
+                    <select name="roomCount">
+                        <option value="">선택안함</option>
+                        <option value="1">1</option><option value="2">2</option>
+                        <option value="3">3</option><option value="4">4</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label>엘리베이터</label>
+                    <select name="hasElevator">
+                        <option value="">선택안함</option>
+                        <option value="true">있음</option>
+                        <option value="false">없음</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label>주차</label>
+                    <select name="hasParking">
+                        <option value="">선택안함</option>
+                        <option value="true">가능</option>
+                        <option value="false">불가</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label>반려동물</label>
+                    <select name="petAllowed">
+                        <option value="">선택안함</option>
+                        <option value="true">가능</option>
+                        <option value="false">불가</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label>LH 여부</label>
+                    <select name="lhAvailable">
+                        <option value="">선택안함</option>
+                        <option value="true">LH</option>
+                        <option value="false">일반</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>연락 / 비밀번호</h2>
+            <div class="grid">
+                <div class="field">
+                    <label>세입자 연락처</label>
+                    <input type="text" name="tenantPhone" placeholder="예: 010-0000-0000" />
+                </div>
+                <div class="field">
+                    <label>건물주 연락처</label>
+                    <input type="text" name="ownerPhone" placeholder="예: 010-0000-0000" />
+                </div>
+                <div class="field">
+                    <label>공동현관 비번</label>
+                    <input name="entrancePassword" />
+                </div>
+                <div class="field">
+                    <label>집 비번</label>
+                    <input name="housePassword" />
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>사진</h2>
+            <div class="field">
+                <label>사진 업로드</label>
+                <input type="file" name="photos" multiple accept="image/*"/>
+                <div class="help">여러 장 업로드 가능 (권장: 5MB 이하)</div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <a class="btn ghost" href="/properties">취소</a>
+            <button class="btn primary" type="submit">저장</button>
+        </div>
+    </form>
+
+</div>
 </body>
 </html>

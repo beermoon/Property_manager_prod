@@ -21,6 +21,12 @@ public class Memo {
 
     private LocalDateTime createdAt;
 
+    @PrePersist
+    void prePersist() {
+        this.createdAt = LocalDateTime.now();
+    }
+
+
     protected Memo() {}
 
     public Memo(String content) {
@@ -30,6 +36,7 @@ public class Memo {
     public Long getId() {return id;}
     public String getContent() {return content;}
     public LocalDateTime getCreatedAt() {return createdAt;}
+    public Property getProperty() {return property;}
 
     void setProperty(Property property) {
         this.property = property;

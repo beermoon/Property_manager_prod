@@ -160,7 +160,7 @@ public class Property {
         this.managementFee = toWon(req.getManagementFee());
 
         // status는 기본 VACANT로 하기로 했으니:
-        this.status = PropertyStatus.VACANT;
+        this.status = (req.getStatus() == null) ? PropertyStatus.VACANT : req.getStatus();
 
         // ===== 옵션 =====
         this.hasElevator = req.getHasElevator();
@@ -188,6 +188,35 @@ public class Property {
 
     public Long getManagementFeeMan() {
         return managementFee == null ? null : managementFee / 10_000;
+    }
+
+    // ===== 화면 표시용 라벨 (Thymeleaf에서 쓰기) =====
+
+    public String getDealTypeLabel() {
+        return dealType == null ? "-" : dealType.getLabel(); // DealType에 getLabel() 있어야 함
+    }
+
+    public String getStatusLabel() {
+        return status == null ? "-" : status.getLabel(); // PropertyStatus에 getLabel() 있어야 함
+    }
+
+    private String yn(Boolean v) {
+        if (v == null) return "-";
+        return v ? "있음" : "없음";
+    }
+
+    private String yesNo(Boolean v) {
+        if (v == null) return "-";
+        return v ? "가능" : "불가";
+    }
+
+    public String getElevatorLabel() { return yn(hasElevator); }
+    public String getParkingLabel() { return yn(hasParking); }
+    public String getPetLabel() { return yesNo(petAllowed); }
+
+    public String getLhLabel() {
+        if (lhAvailable == null) return "-";
+        return lhAvailable ? "LH" : "일반";
     }
 
 
