@@ -4,275 +4,86 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>매물 목록</title>
-    <style>
-        :root{
-            --border:#e5e7eb;
-            --text:#111827;
-            --muted:#6b7280;
-            --bg:#ffffff;
-            --panel:#f9fafb;
-            --primary:#111827;
-            --danger:#ef4444;
-        }
-        *{ box-sizing:border-box; }
-        body{
-            margin:0;
-            font-family: ui-sans-serif, system-ui, -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
-            color:var(--text);
-            background:var(--bg);
-        }
-        .wrap{
-            max-width:1200px;
-            margin:0 auto;
-            padding:18px 16px 26px;
-        }
-        .topbar{
-            display:flex;
-            justify-content:space-between;
-            align-items:flex-end;
-            gap:12px;
-            margin-bottom:12px;
-        }
-        h1{
-            margin:0;
-            font-size:20px;
-            letter-spacing:-0.2px;
-        }
-        .actions{
-            display:flex;
-            flex-wrap:wrap;
-            gap:8px;
-            align-items:center;
-            justify-content:flex-end;
-        }
-        .btn{
-            display:inline-flex;
-            align-items:center;
-            gap:6px;
-            padding:9px 12px;
-            border-radius:10px;
-            border:1px solid var(--border);
-            background:#fff;
-            color:var(--text);
-            text-decoration:none;
-            font-size:13px;
-            cursor:pointer;
-        }
-        .btn.primary{
-            background:var(--primary);
-            border-color:var(--primary);
-            color:#fff;
-        }
-        .btn.danger{
-            background:#fff;
-            border-color:#fecaca;
-            color:var(--danger);
-        }
-        .panel{
-            border:1px solid var(--border);
-            background:var(--panel);
-            border-radius:14px;
-            padding:12px;
-            margin-bottom:12px;
-        }
-        .panel-row{
-            display:flex;
-            gap:10px;
-            flex-wrap:wrap;
-            align-items:center;
-        }
-        .field{
-            display:flex;
-            flex-direction:column;
-            gap:6px;
-            min-width:220px;
-            flex:1;
-        }
-        .field label{
-            font-size:12px;
-            color:var(--muted);
-        }
-        input{
-            width:100%;
-            padding:10px 10px;
-            border-radius:10px;
-            border:1px solid var(--border);
-            background:#fff;
-            font-size:13px;
-            outline:none;
-        }
-        input:focus{
-            border-color:#c7cdd6;
-            box-shadow:0 0 0 3px rgba(17,24,39,.06);
-        }
-        .hint{
-            margin-top:8px;
-            font-size:12px;
-            color:var(--muted);
-        }
-
-        /* table */
-        .table-wrap{
-            border:1px solid var(--border);
-            border-radius:14px;
-            overflow:hidden;
-            background:#fff;
-        }
-        table{
-            width:100%;
-            border-collapse:collapse;
-            table-layout:fixed;
-        }
-        thead th{
-            background:#f3f4f6;
-            font-weight:700;
-            font-size:12px;
-            color:#374151;
-            text-align:left;
-            padding:10px 12px;
-            border-bottom:1px solid var(--border);
-        }
-        tbody td{
-            padding:10px 12px;
-            border-bottom:1px solid var(--border);
-            font-size:13px;
-            vertical-align:middle;
-        }
-        tbody tr:nth-child(even){
-            background:#fcfcfd;
-        }
-        tbody tr:hover{
-            background:#f9fafb;
-        }
-
-        .mono{ font-variant-numeric: tabular-nums; }
-        .muted{ color:var(--muted); font-size:12px; }
-        .ellipsis{
-            overflow:hidden;
-            text-overflow:ellipsis;
-            white-space:nowrap;
-        }
-        .badge{
-            display:inline-flex;
-            align-items:center;
-            padding:4px 8px;
-            border-radius:999px;
-            border:1px solid var(--border);
-            background:#fff;
-            font-size:12px;
-            color:#374151;
-        }
-        .badge.green{ border-color:#bbf7d0; background:#f0fdf4; }
-        .badge.gray{ border-color:#e5e7eb; background:#f9fafb; }
-        .row-actions{
-            display:flex;
-            gap:6px;
-            flex-wrap:wrap;
-            justify-content:flex-end;
-        }
-
-        /* responsive */
-        @media (max-width: 860px){
-            table{ table-layout:auto; }
-            thead{ display:none; }
-            tbody tr{
-                display:block;
-                padding:12px;
-                border-bottom:1px solid var(--border);
-            }
-            tbody td{
-                display:flex;
-                justify-content:space-between;
-                gap:12px;
-                border-bottom:none;
-                padding:6px 0;
-            }
-            tbody td::before{
-                content: attr(data-label);
-                color:var(--muted);
-                font-size:12px;
-                flex:0 0 90px;
-            }
-            .row-actions{ justify-content:flex-start; }
-        }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
 <body>
-<div class="wrap">
+<div class="wrap wide">
 
-    <div class="topbar">
+    <div class="topbar" style="align-items:flex-end;">
         <div>
             <h1>매물 목록</h1>
             <div class="muted">등록된 매물들을 빠르게 확인하고 수정/삭제할 수 있어요.</div>
         </div>
 
-        <div class="actions">
+        <div class="inline" style="justify-content:flex-end;">
             <a class="btn primary" href="/properties/new">+ 매물 등록</a>
             <a class="btn" href="/">🗺️ 매물 지도</a>
         </div>
     </div>
 
-    <!-- 검색(현재는 UI만: 나중에 서버 필터 붙일 때 쓸 수 있게) -->
-    <div class="panel">
-        <div class="panel-row">
-            <div class="field">
+    <div class="card">
+        <h2>검색</h2>
+        <div class="inline">
+            <div class="field" style="min-width:260px; flex:1;">
                 <label>검색(제목/주소)</label>
                 <input id="q" type="text" placeholder="예: 해운대, 센텀, 아파트..." />
             </div>
             <button class="btn" type="button" onclick="applyFilter()">검색</button>
             <button class="btn" type="button" onclick="resetFilter()">초기화</button>
         </div>
+        <div class="help">※ 현재는 프론트 임시 필터(나중에 서버 검색 붙일 때 교체)</div>
     </div>
 
-    <div class="table-wrap">
-        <table>
+    <div class="card" style="background:#fff; overflow:auto;">
+        <table style="width:100%; border-collapse:collapse;">
             <thead>
-            <tr>
-                <th style="width:70px;">ID</th>
-                <th style="width:220px;">제목</th>
-                <th>주소</th>
-                <th style="width:90px;">유형</th>
-                <th style="width:140px;">금액(만)</th>
-                <th style="width:90px;">상태</th>
-                <th style="width:220px; text-align:right;">액션</th>
+            <tr style="background:#f3f4f6; text-align:left; font-size:12px; color:#374151;">
+                <th style="padding:10px 12px; border-bottom:1px solid var(--border); width:70px;">ID</th>
+                <th style="padding:10px 12px; border-bottom:1px solid var(--border); width:240px;">제목</th>
+                <th style="padding:10px 12px; border-bottom:1px solid var(--border);">주소</th>
+                <th style="padding:10px 12px; border-bottom:1px solid var(--border); width:90px;">유형</th>
+                <th style="padding:10px 12px; border-bottom:1px solid var(--border); width:140px;">금액(만)</th>
+                <th style="padding:10px 12px; border-bottom:1px solid var(--border); width:90px;">상태</th>
+                <th style="padding:10px 12px; border-bottom:1px solid var(--border); width:260px; text-align:right;">액션</th>
             </tr>
             </thead>
 
             <tbody id="tbody">
-            <tr th:each="p : ${properties}" class="row">
-                <td class="mono" data-label="ID" th:text="${p.id}">1</td>
+            <tr th:each="p : ${properties}" class="row" style="border-bottom:1px solid var(--border);">
+                <td style="padding:10px 12px; font-variant-numeric:tabular-nums;" th:text="${p.id}">1</td>
 
-                <td data-label="제목">
-                    <a th:href="@{|/properties/${p.id}|}" th:text="${p.title}" class="ellipsis"
-                       style="color:var(--text); text-decoration:none; font-weight:700;">제목</a>
-                    <div class="muted ellipsis" th:text="${p.buildingName} ?: ''">건물명</div>
+                <td style="padding:10px 12px;">
+                    <a th:href="@{|/properties/${p.id}|}"
+                       th:text="${p.title}"
+                       style="color:var(--text); text-decoration:none; font-weight:700; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                        제목
+                    </a>
+                    <div class="muted" th:text="${p.buildingName} ?: ''" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">건물명</div>
                 </td>
 
-                <td data-label="주소" class="ellipsis" th:text="${p.address}">주소</td>
+                <td style="padding:10px 12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" th:text="${p.address}">주소</td>
 
-                <td data-label="유형">
-                    <span class="badge"
-                          th:text="${p.dealType.label}">월세</span>
+                <td style="padding:10px 12px;">
+                    <span class="badge" th:text="${p.dealType.label}">월세</span>
                 </td>
 
-                <td data-label="금액(만)" class="mono">
-                    <!-- 월세: 보/월, 전세: 전세 -->
-                    <span th:if="${p.dealType.name() == 'MONTHLY'}">
-                        <span th:text="${p.depositMan}">0</span>/<span th:text="${p.monthlyRentMan}">0</span>
-                    </span>
+                <td style="padding:10px 12px; font-variant-numeric:tabular-nums;">
+          <span th:if="${p.dealType.name() == 'MONTHLY'}">
+            <span th:text="${p.depositMan}">0</span>/<span th:text="${p.monthlyRentMan}">0</span>
+          </span>
                     <span th:if="${p.dealType.name() == 'JEONSE'}">
-                        전세 <span th:text="${p.depositMan}">0</span>
-                    </span>
+            전세 <span th:text="${p.depositMan}">0</span>
+          </span>
                 </td>
 
-                <td data-label="상태">
-                    <span class="badge"
-                          th:classappend="${p.status.name() == 'VACANT'} ? ' green' : ' gray'"
-                          th:text="${p.status.label}">공실</span>
+                <td style="padding:10px 12px;">
+          <span class="badge"
+                th:classappend="${p.status.name() == 'VACANT'} ? ' green' : ' gray'"
+                th:text="${p.status.label}">공실</span>
                 </td>
 
-                <td data-label="액션">
-                    <div class="row-actions">
+                <td style="padding:10px 12px; text-align:right;">
+                    <div class="inline" style="justify-content:flex-end;">
                         <a class="btn" th:href="@{|/properties/${p.id}|}">상세</a>
                         <a class="btn" th:href="@{|/properties/${p.id}/edit|}">수정</a>
                         <form th:action="@{|/properties/${p.id}/delete|}" method="post" style="margin:0;"
@@ -288,27 +99,6 @@
 
 </div>
 
-<script>
-    // ✅ 간단 프론트 필터(서버 검색 붙이기 전 임시용)
-    function applyFilter(){
-        const q = (document.getElementById('q').value || '').trim().toLowerCase();
-        const rows = document.querySelectorAll('#tbody tr.row');
-        let visible = 0;
-
-        rows.forEach(r => {
-            if (!q) { r.style.display = ''; visible++; return; }
-
-            const text = r.innerText.toLowerCase();
-            const ok = text.includes(q);
-            r.style.display = ok ? '' : 'none';
-            if (ok) visible++;
-        });
-    }
-    function resetFilter(){
-        document.getElementById('q').value = '';
-        applyFilter();
-    }
-</script>
-
+<script defer th:src="@{/js/list.js}"></script>
 </body>
 </html>

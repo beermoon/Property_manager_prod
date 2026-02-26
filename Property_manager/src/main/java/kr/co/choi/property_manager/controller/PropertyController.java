@@ -10,12 +10,7 @@ import kr.co.choi.property_manager.service.FileStorageService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import kr.co.choi.property_manager.infra.NaverGeocodingClient;
 import org.springframework.web.multipart.MultipartFile;
-
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Controller
 @RequestMapping("/properties")
@@ -151,7 +146,7 @@ public class PropertyController {
     @GetMapping("/{id}/memos/new")
     public String newMemoForm(@PathVariable Long id, Model model) {
         model.addAttribute("propertyId",id);
-        return "memos/new";
+        return "MemoNew";
     }
 
 

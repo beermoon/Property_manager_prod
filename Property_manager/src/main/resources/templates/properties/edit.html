@@ -4,40 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>매물 수정</title>
-    <style>
-        :root{--border:#e5e7eb;--text:#111827;--muted:#6b7280;--bg:#fff;--panel:#f9fafb;--primary:#111827;--danger:#ef4444;}
-        *{box-sizing:border-box}
-        body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;color:var(--text);background:var(--bg)}
-        .wrap{max-width:1100px;margin:0 auto;padding:18px 16px 28px}
-        .topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
-        h1{margin:0;font-size:20px;letter-spacing:-.2px}
-        .btn{display:inline-flex;align-items:center;gap:6px;padding:9px 12px;border-radius:10px;border:1px solid var(--border);background:#fff;color:var(--text);text-decoration:none;font-size:13px;cursor:pointer}
-        .btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}
-        .btn.danger{border-color:#fecaca;color:var(--danger)}
-        .alert{padding:10px 12px;border:1px solid #fecaca;background:#fff1f2;color:#991b1b;border-radius:12px;margin-bottom:12px;font-size:13px}
-        .card{border:1px solid var(--border);background:var(--panel);border-radius:14px;padding:14px;margin-bottom:12px}
-        .card h2{margin:0 0 10px 0;font-size:14px;color:#374151}
-        .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-        @media(max-width:720px){.grid{grid-template-columns:1fr}}
-        .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
-        input,select{
-            width:100%;padding:10px 10px;border-radius:10px;border:1px solid var(--border);
-            background:#fff;font-size:13px;outline:none
-        }
-        input:focus,select:focus{border-color:#c7cdd6;box-shadow:0 0 0 3px rgba(17,24,39,.06)}
-        .actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
-        .photos{display:flex;gap:10px;flex-wrap:wrap}
-        .photo{background:#fff;border:1px solid var(--border);border-radius:12px;padding:10px;text-align:center;width:190px}
-        .photo img{width:170px;height:120px;object-fit:cover;border-radius:10px;border:1px solid var(--border)}
-        .help{margin-top:6px;font-size:12px;color:var(--muted)}
-    </style>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
 <body>
 <div class="wrap">
 
     <div class="topbar">
         <h1>매물 수정</h1>
-        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <div class="inline">
             <a class="btn" th:href="@{|/properties/${propertyId}|}">← 상세</a>
             <a class="btn" href="/properties">목록</a>
             <a class="btn" href="/">🗺️ 지도</a>
@@ -51,11 +25,11 @@
         <div class="card">
             <h2>사진</h2>
 
-            <div class="photos" th:if="${property != null and property.photos != null and !#lists.isEmpty(property.photos)}">
-                <div class="photo" th:each="ph : ${property.photos}">
+            <div class="photos-box" th:if="${property != null and property.photos != null and !#lists.isEmpty(property.photos)}">
+                <div class="photo-card" th:each="ph : ${property.photos}">
                     <img th:src="${ph.url}" alt="photo">
-                    <!-- ✅ 중첩 form 금지: formaction -->
                     <div style="margin-top:8px;">
+                        <!-- ✅ 중첩 form 금지: formaction 사용 -->
                         <button class="btn danger" type="submit"
                                 th:formaction="@{|/properties/${propertyId}/photos/${ph.id}/delete|}"
                                 formmethod="post"
@@ -64,14 +38,16 @@
                 </div>
             </div>
 
-            <div class="help" th:if="${property == null or property.photos == null or #lists.isEmpty(property.photos)}">
+            <div class="photo-help" th:if="${property == null or property.photos == null or #lists.isEmpty(property.photos)}">
                 등록된 사진이 없습니다.
             </div>
 
             <div style="margin-top:10px;">
-                <label style="display:block;font-size:12px;color:var(--muted);margin-bottom:6px;">사진 추가</label>
-                <input type="file" name="photos" multiple accept="image/*"/>
-                <div class="help">여러 장 업로드 가능</div>
+                <div class="field">
+                    <label>사진 추가</label>
+                    <input type="file" name="photos" multiple accept="image/*"/>
+                    <div class="help">여러 장 업로드 가능</div>
+                </div>
             </div>
         </div>
 
@@ -129,7 +105,8 @@
                     </select>
                 </div>
 
-                <div class="field"><label>엘리베이터</label>
+                <div class="field">
+                    <label>엘리베이터</label>
                     <select name="hasElevator">
                         <option value="" th:selected="${form.hasElevator == null}">선택안함</option>
                         <option value="true" th:selected="${form.hasElevator == true}">있음</option>
@@ -137,7 +114,8 @@
                     </select>
                 </div>
 
-                <div class="field"><label>주차</label>
+                <div class="field">
+                    <label>주차</label>
                     <select name="hasParking">
                         <option value="" th:selected="${form.hasParking == null}">선택안함</option>
                         <option value="true" th:selected="${form.hasParking == true}">가능</option>
@@ -145,7 +123,8 @@
                     </select>
                 </div>
 
-                <div class="field"><label>반려동물</label>
+                <div class="field">
+                    <label>반려동물</label>
                     <select name="petAllowed">
                         <option value="" th:selected="${form.petAllowed == null}">선택안함</option>
                         <option value="true" th:selected="${form.petAllowed == true}">가능</option>
@@ -153,7 +132,8 @@
                     </select>
                 </div>
 
-                <div class="field"><label>LH 여부</label>
+                <div class="field">
+                    <label>LH 여부</label>
                     <select name="lhAvailable">
                         <option value="" th:selected="${form.lhAvailable == null}">선택안함</option>
                         <option value="true" th:selected="${form.lhAvailable == true}">LH</option>
