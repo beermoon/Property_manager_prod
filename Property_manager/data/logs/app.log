@@ -1,0 +1,120 @@
+2026-02-27T13:59:28.486+09:00  INFO 95019 --- [main] k.c.c.p.PropertyManagerApplication       : Starting PropertyManagerApplication v0.0.1-SNAPSHOT using Java 18.0.2.1 with PID 95019 (/Users/choemyeong-gi/MainChoi/Project/Property_manager/Property_manager/build/libs/Property_manager-0.0.1-SNAPSHOT.jar started by choemyeong-gi in /Users/choemyeong-gi/MainChoi/Project/Property_manager/Property_manager)
+2026-02-27T13:59:28.488+09:00  INFO 95019 --- [main] k.c.c.p.PropertyManagerApplication       : The following 1 profile is active: "local"
+2026-02-27T13:59:28.860+09:00  INFO 95019 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-02-27T13:59:28.896+09:00  INFO 95019 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 30 ms. Found 3 JPA repository interfaces.
+2026-02-27T13:59:29.214+09:00  INFO 95019 --- [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-02-27T13:59:29.224+09:00  INFO 95019 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-02-27T13:59:29.224+09:00  INFO 95019 --- [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.15]
+2026-02-27T13:59:29.242+09:00  INFO 95019 --- [main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 725 ms
+2026-02-27T13:59:29.337+09:00  INFO 95019 --- [main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-02-27T13:59:29.379+09:00  INFO 95019 --- [main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.2.1.Final
+2026-02-27T13:59:29.654+09:00  INFO 95019 --- [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-02-27T13:59:29.673+09:00  INFO 95019 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-02-27T13:59:30.099+09:00  INFO 95019 --- [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.sqlite.jdbc4.JDBC4Connection@67f591c2
+2026-02-27T13:59:30.100+09:00  INFO 95019 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-02-27T13:59:30.131+09:00  INFO 95019 --- [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:sqlite:./data/property.db]
+	Database driver: SQLite JDBC
+	Database dialect: SQLiteDialect
+	Database version: 3.45.1
+	Default catalog/schema: undefined/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: SERIALIZABLE [default SERIALIZABLE]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-02-27T13:59:30.657+09:00  INFO 95019 --- [main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-02-27T13:59:30.687+09:00  INFO 95019 --- [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-02-27T13:59:30.741+09:00  INFO 95019 --- [main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-02-27T13:59:31.302+09:00  WARN 95019 --- [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-02-27T13:59:31.522+09:00  INFO 95019 --- [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-02-27T13:59:31.530+09:00  INFO 95019 --- [main] k.c.c.p.PropertyManagerApplication       : Started PropertyManagerApplication in 3.357 seconds (process running for 3.712)
+2026-02-27T13:59:39.686+09:00  INFO 95019 --- [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-02-27T13:59:39.688+09:00  INFO 95019 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-02-27T13:59:39.694+09:00  INFO 95019 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 6 ms
+2026-02-27T14:02:03.825+09:00  INFO 95019 --- [SpringApplicationShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-02-27T14:02:03.831+09:00  INFO 95019 --- [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-02-27T14:02:03.838+09:00  INFO 95019 --- [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-02-27T14:02:03.844+09:00  INFO 95019 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-02-27T14:02:03.846+09:00  INFO 95019 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2026-02-27T14:02:07.926+09:00  INFO 96818 --- [main] k.c.c.p.PropertyManagerApplication       : Starting PropertyManagerApplication v0.0.1-SNAPSHOT using Java 18.0.2.1 with PID 96818 (/Users/choemyeong-gi/MainChoi/Project/Property_manager/Property_manager/build/libs/Property_manager-0.0.1-SNAPSHOT.jar started by choemyeong-gi in /Users/choemyeong-gi/MainChoi/Project/Property_manager/Property_manager)
+2026-02-27T14:02:07.927+09:00  INFO 96818 --- [main] k.c.c.p.PropertyManagerApplication       : The following 1 profile is active: "local"
+2026-02-27T14:02:08.340+09:00  INFO 96818 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-02-27T14:02:08.371+09:00  INFO 96818 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 24 ms. Found 3 JPA repository interfaces.
+2026-02-27T14:02:08.702+09:00  INFO 96818 --- [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-02-27T14:02:08.718+09:00  INFO 96818 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-02-27T14:02:08.718+09:00  INFO 96818 --- [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.15]
+2026-02-27T14:02:08.735+09:00  INFO 96818 --- [main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 779 ms
+2026-02-27T14:02:08.841+09:00  INFO 96818 --- [main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-02-27T14:02:08.883+09:00  INFO 96818 --- [main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.2.1.Final
+2026-02-27T14:02:09.152+09:00  INFO 96818 --- [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-02-27T14:02:09.174+09:00  INFO 96818 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-02-27T14:02:09.600+09:00  INFO 96818 --- [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.sqlite.jdbc4.JDBC4Connection@6de610c6
+2026-02-27T14:02:09.602+09:00  INFO 96818 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-02-27T14:02:09.636+09:00  INFO 96818 --- [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:sqlite:./data/property.db]
+	Database driver: SQLite JDBC
+	Database dialect: SQLiteDialect
+	Database version: 3.45.1
+	Default catalog/schema: undefined/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: SERIALIZABLE [default SERIALIZABLE]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-02-27T14:02:10.307+09:00  INFO 96818 --- [main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-02-27T14:02:10.340+09:00  INFO 96818 --- [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-02-27T14:02:10.396+09:00  INFO 96818 --- [main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-02-27T14:02:11.031+09:00  WARN 96818 --- [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-02-27T14:02:11.272+09:00  INFO 96818 --- [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-02-27T14:02:11.283+09:00  INFO 96818 --- [main] k.c.c.p.PropertyManagerApplication       : Started PropertyManagerApplication in 3.734 seconds (process running for 4.086)
+2026-02-27T14:02:14.096+09:00  INFO 96818 --- [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-02-27T14:02:14.097+09:00  INFO 96818 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-02-27T14:02:14.098+09:00  INFO 96818 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2026-02-27T14:05:29.260+09:00  INFO 96818 --- [SpringApplicationShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-02-27T14:05:29.270+09:00  INFO 96818 --- [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-02-27T14:05:29.276+09:00  INFO 96818 --- [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-02-27T14:05:29.283+09:00  INFO 96818 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-02-27T14:05:29.287+09:00  INFO 96818 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2026-02-27T14:06:04.330+09:00  INFO 99446 --- [main] k.c.c.p.PropertyManagerApplication       : Starting PropertyManagerApplication v0.0.1-SNAPSHOT using Java 18.0.2.1 with PID 99446 (/Users/choemyeong-gi/MainChoi/Project/Property_manager/Property_manager/build/libs/Property_manager-0.0.1-SNAPSHOT.jar started by choemyeong-gi in /Users/choemyeong-gi/MainChoi/Project/Property_manager/Property_manager)
+2026-02-27T14:06:04.332+09:00  INFO 99446 --- [main] k.c.c.p.PropertyManagerApplication       : The following 1 profile is active: "local"
+2026-02-27T14:06:04.712+09:00  INFO 99446 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-02-27T14:06:04.749+09:00  INFO 99446 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 32 ms. Found 3 JPA repository interfaces.
+2026-02-27T14:06:05.039+09:00  INFO 99446 --- [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-02-27T14:06:05.048+09:00  INFO 99446 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-02-27T14:06:05.048+09:00  INFO 99446 --- [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.15]
+2026-02-27T14:06:05.066+09:00  INFO 99446 --- [main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 703 ms
+2026-02-27T14:06:05.156+09:00  INFO 99446 --- [main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-02-27T14:06:05.185+09:00  INFO 99446 --- [main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.2.1.Final
+2026-02-27T14:06:05.440+09:00  INFO 99446 --- [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-02-27T14:06:05.458+09:00  INFO 99446 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-02-27T14:06:05.911+09:00  INFO 99446 --- [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.sqlite.jdbc4.JDBC4Connection@986b619
+2026-02-27T14:06:05.912+09:00  INFO 99446 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-02-27T14:06:05.945+09:00  INFO 99446 --- [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:sqlite:./data/property.db]
+	Database driver: SQLite JDBC
+	Database dialect: SQLiteDialect
+	Database version: 3.45.1
+	Default catalog/schema: undefined/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: SERIALIZABLE [default SERIALIZABLE]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-02-27T14:06:06.439+09:00  INFO 99446 --- [main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-02-27T14:06:06.466+09:00  INFO 99446 --- [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-02-27T14:06:06.515+09:00  INFO 99446 --- [main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-02-27T14:06:07.204+09:00  WARN 99446 --- [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-02-27T14:06:07.448+09:00  INFO 99446 --- [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-02-27T14:06:07.457+09:00  INFO 99446 --- [main] k.c.c.p.PropertyManagerApplication       : Started PropertyManagerApplication in 3.448 seconds (process running for 3.754)
+2026-02-27T14:06:12.960+09:00  INFO 99446 --- [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-02-27T14:06:12.961+09:00  INFO 99446 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-02-27T14:06:12.961+09:00  INFO 99446 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 0 ms
+2026-02-27T14:07:39.722+09:00  INFO 99446 --- [SpringApplicationShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-02-27T14:07:39.729+09:00  INFO 99446 --- [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-02-27T14:07:39.737+09:00  INFO 99446 --- [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-02-27T14:07:39.740+09:00  INFO 99446 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-02-27T14:07:39.743+09:00  INFO 99446 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
