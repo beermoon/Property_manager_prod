@@ -85,21 +85,34 @@
                     ? ` · 전세 ${p.depositMan ?? '-'}만`
                     : '';
 
-        return `
-      <div style="position:relative; padding:10px 34px 10px 10px; min-width:240px;">
-        <button type="button" class="iw-close" aria-label="닫기"></button>
+        const tenant = (p.tenantPhone && String(p.tenantPhone).trim() !== '') ? p.tenantPhone : '-';
+        const owner  = (p.ownerPhone && String(p.ownerPhone).trim() !== '') ? p.ownerPhone : '-';
 
-        <div style="font-weight:700; margin-bottom:6px;">${p.title ?? ''}</div>
-        <div style="margin:6px 0; color:#666; font-size:12px;">
-          ${p.address ?? ''}
-        </div>
-        <div style="margin:6px 0; font-size:12px; color:#444;">
-          ${(p.dealTypeLabel ?? p.dealType ?? '')} · ${(p.statusLabel ?? p.status ?? '')}
-          ${dealLine}
-        </div>
+        return `
+    <div style="position:relative; padding:10px 34px 10px 10px; min-width:260px;">
+      <button type="button" class="iw-close" aria-label="닫기"></button>
+
+      <div style="font-weight:700; margin-bottom:6px;">${p.title ?? ''}</div>
+
+      <div style="margin:6px 0; color:#666; font-size:12px;">
+        ${p.address ?? ''}
+      </div>
+
+      <div style="margin:6px 0; font-size:12px; color:#444;">
+        ${(p.dealTypeLabel ?? p.dealType ?? '')} · ${(p.statusLabel ?? p.status ?? '')}
+        ${dealLine}
+      </div>
+
+      <div style="margin-top:8px; padding-top:8px; border-top:1px solid #eee; font-size:12px; color:#374151;">
+        <div>세입자: <span style="color:#111827;">${tenant}</span></div>
+        <div>건물주: <span style="color:#111827;">${owner}</span></div>
+      </div>
+
+      <div style="margin-top:8px;">
         <a href="/properties/${p.id}">상세보기</a>
       </div>
-    `;
+    </div>
+  `;
     }
 
     function wireCloseButton(info) {

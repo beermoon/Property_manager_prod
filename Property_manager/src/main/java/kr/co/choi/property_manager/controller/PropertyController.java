@@ -6,7 +6,9 @@ import kr.co.choi.property_manager.infra.NaverGeocodingClient;
 import kr.co.choi.property_manager.repository.MemoRepository;
 import kr.co.choi.property_manager.repository.PropertyPhotoRepository;
 import kr.co.choi.property_manager.repository.PropertyRepository;
+import kr.co.choi.property_manager.repository.specs.PropertySpecs;
 import kr.co.choi.property_manager.service.FileStorageService;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -36,15 +38,77 @@ public class PropertyController {
 
     // 1) 리스트
     @GetMapping
-    public String list(Model model) {
-        model.addAttribute("properties", propertyRepository.findAll());
+    public String list(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String region,
+            @RequestParam(required = false) DealType dealType,
+            @RequestParam(required = false) PropertyStatus status,
+
+
+            @RequestParam(required = false) Long minDeposit,
+            @RequestParam(required = false) Long maxDeposit,
+            @RequestParam(required = false) Long minMonthlyRent,
+            @RequestParam(required = false) Long maxMonthlyRent,
+
+            @RequestParam(required = false) Integer minBuiltYear,
+            @RequestParam(required = false) Integer maxBuiltYear,
+
+            @RequestParam(required = false) Double minArea,
+            @RequestParam(required = false) Double maxArea,
+
+            @RequestParam(required = false) Integer roomCount,
+            @RequestParam(required = false) Boolean hasElevator,
+            @RequestParam(required = false) Boolean hasParking,
+            @RequestParam(required = false) Boolean petAllowed,
+            @RequestParam(required = false) Boolean lhAvailable,
+
+            @RequestParam(required = false) String expiry,
+            Model model
+    ) {
+        var spec = Specification.where(PropertySpecs.keywordContains(keyword))
+                .and(PropertySpecs.regionEq(region))
+                .and(PropertySpecs.dealTypeEq(dealType))
+                .and(PropertySpecs.statusEq(status))
+                .and(PropertySpecs.depositBetween(minDeposit, maxDeposit))
+                .and(PropertySpecs.monthlyRentBetween(minMonthlyRent, maxMonthlyRent))
+                .and(PropertySpecs.builtYearBetween(minBuiltYear, maxBuiltYear))
+                .and(PropertySpecs.areaBetween(minArea, maxArea))
+                .and(PropertySpecs.roomCountEq(roomCount))
+                .and(PropertySpecs.hasElevator(hasElevator))
+                .and(PropertySpecs.hasParking(hasParking))
+                .and(PropertySpecs.petAllowed(petAllowed))
+                .and(PropertySpecs.lhAvailable(lhAvailable))
+                .and(PropertySpecs.expiryContains(expiry));
+
+        model.addAttribute("properties", propertyRepository.findAll(spec));
+
+        // 폼 값 유지용(선택)
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("region", region);
+        model.addAttribute("dealType", dealType);
+        model.addAttribute("status", status);
+        model.addAttribute("minDeposit", minDeposit);
+        model.addAttribute("maxDeposit", maxDeposit);
+        model.addAttribute("minMonthlyRent", minMonthlyRent);
+        model.addAttribute("maxMonthlyRent", maxMonthlyRent);
+        model.addAttribute("minBuiltYear", minBuiltYear);
+        model.addAttribute("maxBuiltYear", maxBuiltYear);
+        model.addAttribute("minArea", minArea);
+        model.addAttribute("maxArea", maxArea);
+        model.addAttribute("roomCount", roomCount);
+        model.addAttribute("hasElevator", hasElevator);
+        model.addAttribute("hasParking", hasParking);
+        model.addAttribute("petAllowed", petAllowed);
+        model.addAttribute("lhAvailable", lhAvailable);
+        model.addAttribute("expiry", expiry);
+
         return "properties/list";
     }
 
     // 2) 등록 폼
     @GetMapping("/new")
     public String newForm(Model model) {
-        model.addAttribute("dealTypes", PropertyType.values());
+        model.addAttribute("dealTypes", DealType.values());
         model.addAttribute("statuses", PropertyStatus.values());
         return "properties/new";
     }
@@ -183,6 +247,7 @@ public class PropertyController {
         form.setMonthlyRent(property.getMonthlyRentMan());
         form.setManagementFee(property.getManagementFeeMan());
         form.setStatus(property.getStatus());
+        form.setExpiry(property.getExpiry());
 
         form.setHasElevator(property.getHasElevator());
         form.setHasParking(property.getHasParking());

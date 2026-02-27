@@ -121,7 +121,10 @@ public class PropertyApiController {
             String dealTypeLabel,
             String statusLabel,
             Long depositMan,
-            Long monthlyRentMan
+            Long monthlyRentMan,
+
+            String tenantPhone,
+            String ownerPhone
     ) {
         static PropertyMarkerDto from(Property p) {
             return new PropertyMarkerDto(
@@ -135,7 +138,9 @@ public class PropertyApiController {
                     p.getDealType() == null ? "" : p.getDealType().getLabel(),
                     p.getStatus() == null ? "" : p.getStatus().getLabel(),
                     p.getDepositMan(),
-                    p.getMonthlyRentMan()
+                    p.getMonthlyRentMan(),
+                    p.getTenantPhone(),
+                    p.getOwnerPhone()
             );
         }
     }

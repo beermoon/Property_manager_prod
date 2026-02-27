@@ -69,6 +69,9 @@ public class Property {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    // 만기
+    private String expiry;
+
     public Property() {}
 
     @PrePersist
@@ -109,6 +112,7 @@ public class Property {
     public String getHousePassword() { return housePassword; }
     public String getTenantPhone() { return tenantPhone; }
     public String getOwnerPhone() { return ownerPhone; }
+    public String getExpiry() {return expiry;}
 
 
 
@@ -168,6 +172,8 @@ public class Property {
         this.roomCount = req.getRoomCount();
         this.petAllowed = req.getPetAllowed();
         this.lhAvailable = req.getLhAvailable();
+        this.expiry = req.getExpiry();
+
 
         // ===== 보안/연락 =====
         this.entrancePassword = req.getEntrancePassword();

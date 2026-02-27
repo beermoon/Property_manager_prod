@@ -126,6 +126,14 @@ public class PropertySpecs {
     }
 
 
+    // 만기
+    public static Specification<Property> expiryContains(String expiry) {
+        return (root, query, cb) -> {
+            if (expiry == null || expiry.isBlank()) return cb.conjunction();
+            String like = "%" + expiry.trim().toLowerCase() + "%";
+            return cb.like(cb.lower(root.get("expiry")), like);
+        };
+    }
 
 
 }

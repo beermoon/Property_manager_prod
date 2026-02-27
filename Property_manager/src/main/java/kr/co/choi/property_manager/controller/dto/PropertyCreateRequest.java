@@ -33,6 +33,8 @@ public class PropertyCreateRequest {
     public String tenantPhone;
     public String ownerPhone;
 
+    private String expiry;
+
     // =========== Getter / Setter ========
 
 
@@ -210,5 +212,14 @@ public class PropertyCreateRequest {
 
     public void setOwnerPhone(String ownerPhone) {
         this.ownerPhone = ownerPhone;
+    }
+
+
+    public String getExpiry() {
+        return expiry;
+    }
+
+    public void setExpiry(String expiry) {
+        this.expiry = expiry;
     }
 }

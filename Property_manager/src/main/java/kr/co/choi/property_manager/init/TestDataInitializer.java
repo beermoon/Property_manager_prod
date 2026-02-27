@@ -1,8 +1,8 @@
-
-// 더미데이터 파일
-
-
-
+//
+// //더미데이터 파일
+//
+//
+//
 //package kr.co.choi.property_manager.init;
 //
 //import kr.co.choi.property_manager.controller.dto.PropertyCreateRequest;

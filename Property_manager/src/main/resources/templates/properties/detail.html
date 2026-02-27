@@ -61,6 +61,11 @@
                 </div>
             </div>
 
+            <div class="item">
+                <div class="k">만기</div>
+                <div class="v" th:text="${property.expiry} ?: '-'">-</div>
+            </div>
+
             <div class="item" th:if="${property.dealType.name() == 'MONTHLY'}">
                 <div class="k">보증금</div><div class="v" th:text="${property.depositMan} + ' 만원'">-</div>
             </div>
