@@ -217,3 +217,19 @@ input:focus,select:focus,textarea:focus{
 .grid.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 @media (max-width: 1024px){ .grid.four { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 640px){ .grid.four { grid-template-columns: 1fr; } }
+
+
+/* grid helpers (list/map 공용) */
+.grid.four{
+    display:grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap:12px;
+}
+
+@media (max-width: 1024px){
+    .grid.four{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 720px){
+    .grid.four{ grid-template-columns: 1fr; }
+}
+

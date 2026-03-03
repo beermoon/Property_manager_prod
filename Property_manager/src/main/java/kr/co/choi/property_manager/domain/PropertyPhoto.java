@@ -19,10 +19,10 @@ public class PropertyPhoto {
     private String originalName;
 
     @Column(nullable = false)
-    private String storedName;   // UUID 파일명
+    private String storedName;
 
     @Column(nullable = false)
-    private String url;     // 화면에서 접근할 URL (/uploads/xxxx.jpg)
+    private String url;
 
     private LocalDateTime createdAt;
 
@@ -33,12 +33,19 @@ public class PropertyPhoto {
         this.originalName = originalName;
         this.storedName = storedName;
         this.url = url;
+    }
+
+    @PrePersist
+    void prePersist() {
         this.createdAt = LocalDateTime.now();
     }
 
-    public Long getId() {return id;}
-    public String getUrl() {return url;}
-    public String getOriginalName() {return originalName;}
-    public Property getProperty() {return property;}
+    public void setProperty(Property property) {
+        this.property = property;
+    }
 
+    public Long getId() { return id; }
+    public String getUrl() { return url; }
+    public String getOriginalName() { return originalName; }
+    public Property getProperty() { return property; }
 }

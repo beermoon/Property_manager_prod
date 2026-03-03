@@ -14,6 +14,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/properties")
 public class PropertyController {
@@ -114,13 +116,20 @@ public class PropertyController {
     }
 
     @PostMapping
-    public String create(@ModelAttribute PropertyCreateRequest request,
+    public String create(@ModelAttribute("form") PropertyCreateRequest request,
                          @RequestParam(value = "photos", required = false) java.util.List<MultipartFile> photos,
                          Model model) {
 
+
+
         try {
-            // 1) 주소 검증 + 지오코딩
-            var point = naverGeocodingClient.geocodeOrThrow(request.getAddress());
+
+            if (request.getLotAddress() == null || request.getLotAddress().isBlank()) {
+                throw new IllegalArgumentException("지번 주소는 필수입니다.");
+            }
+
+            // 1) 지오코딩 (지번주소 기준)
+            var point = naverGeocodingClient.geocodeOrThrow(request.getLotAddress());
 
             // 2) 엔티티 생성 + 값 세팅
             Property property = new Property();
@@ -129,10 +138,10 @@ public class PropertyController {
             // 3) 좌표 저장
             property.updateLocation(point.lat(), point.lng());
 
-            // 4) 먼저 property 저장 (id 확보)
+            // 4) 저장
             propertyRepository.save(property);
 
-            // 5) 사진 저장 (있으면)
+            // 5) 사진 저장
             if (photos != null) {
                 for (MultipartFile file : photos) {
                     if (file == null || file.isEmpty()) continue;
@@ -154,10 +163,17 @@ public class PropertyController {
 
         } catch (Exception e) {
             e.printStackTrace();
+
             model.addAttribute("error", e.getMessage());
 
+            // ✅ 입력값 유지 핵심
+            model.addAttribute("form", request);
+
+            // ✅ select 옵션 유지 (new.html에서 쓰는 것들 전부)
             model.addAttribute("dealTypes", DealType.values());
-            return "properties/new";
+            model.addAttribute("statuses", PropertyStatus.values()); // 쓰고 있으면 꼭
+
+            return "properties/new"; // ✅ redirect 하지 말고 그대로 렌더링
         }
     }
 
@@ -277,9 +293,11 @@ public class PropertyController {
             Property property = propertyRepository.findById(id)
                     .orElseThrow(()-> new IllegalArgumentException("Property not found : " + id));
 
-            // 주소가 바뀌면 지오코딩 다시
-            if (request.getAddress() != null && !request.getAddress().equals(property.getAddress())) {
-                var point = naverGeocodingClient.geocodeOrThrow(request.getAddress());
+            String newLot = request.getLotAddress();
+            String oldLot = property.getLotAddress();
+
+            if (newLot != null && !newLot.equals(oldLot)) {
+                var point = naverGeocodingClient.geocodeOrThrow(newLot);
                 property.updateLocation(point.lat(), point.lng());
             }
 

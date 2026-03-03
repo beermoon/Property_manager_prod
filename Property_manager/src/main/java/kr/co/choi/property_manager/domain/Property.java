@@ -22,9 +22,10 @@ public class Property {
     private String region;   // 구역
     private String buildingName; // 건물명
 
-    @Column(nullable = false)   // 도로명 주소
+    @Column(nullable = true)    // 도로명 주소
     private String address;
 
+    @Column(nullable = false)
     private String lotAddress;     // 지번
     private String unitNumber;     // 호수
 
@@ -66,8 +67,19 @@ public class Property {
     @OrderBy("createdAt DESC")
     private List<Memo> memos = new ArrayList<>();
 
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+
+    @OneToMany(mappedBy = "property", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("createdAt DESC")
+    private List<PropertyPhoto> photos = new ArrayList<>();
+
+    public void addPhoto(PropertyPhoto photo) {
+        this.photos.add(photo);
+        photo.setProperty(this);
+    }
 
     // 만기
     private String expiry;
@@ -184,6 +196,15 @@ public class Property {
 
     public List<Memo> getMemos() { return memos; }
 
+    public List<PropertyPhoto> getPhotos() {
+        return photos;
+    }
+
+    public void removePhoto(PropertyPhoto photo) {
+        this.photos.remove(photo);
+        photo.setProperty(null);
+    }
+
     public Long getDepositMan() {
         return deposit == null ? null : deposit /10_000;
     }
@@ -226,15 +247,7 @@ public class Property {
     }
 
 
-    @OneToMany(mappedBy = "property", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("createdAt DESC")
-    private java.util.List<PropertyPhoto> photos = new java.util.ArrayList<>();
 
-    public java.util.List<PropertyPhoto> getPhotos() {return photos;}
-
-    public void addPhoto(PropertyPhoto photo) {
-        this.photos.add(photo);
-    }
 
 
 }

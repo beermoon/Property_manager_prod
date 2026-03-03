@@ -130,7 +130,7 @@ public class PropertyApiController {
             return new PropertyMarkerDto(
                     p.getId(),
                     p.getTitle(),
-                    p.getAddress(),
+                    p.getLotAddress(),
                     p.getLat(),
                     p.getLng(),
                     p.getStatus(),

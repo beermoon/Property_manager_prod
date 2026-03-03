@@ -18,7 +18,8 @@ public class PropertySpecs {
             String like = "%" + keyword.trim().toLowerCase() + "%";
             return cb.or(
                     cb.like(cb.lower(root.get("title")), like),
-                    cb.like(cb.lower(root.get("address")), like)
+                    cb.like(cb.lower(root.get("lotAddress")), like),
+                    cb.like(cb.lower(root.get("buildingName")), like)
             );
         };
     }

@@ -32,12 +32,14 @@
                 <input name="keyword" th:value="${keyword}" placeholder="제목/주소/건물명" />
             </div>
 
-            <div class="grid two">
+            <div class="grid four">
+                <!-- 구역 -->
                 <div class="field">
                     <label>구역</label>
                     <input name="region" th:value="${region}" placeholder="예: 해운대" />
                 </div>
 
+                <!-- 거래유형 -->
                 <div class="field">
                     <label>거래유형</label>
                     <select name="dealType">
@@ -47,13 +49,14 @@
                     </select>
                 </div>
 
+                <!-- 만기 -->
                 <div class="field">
                     <label>만기</label>
                     <input name="expiry" th:value="${expiry}" placeholder="예: 4/27" />
                     <div class="help">예: 4/27, 10/3 등 문자열로 검색</div>
                 </div>
 
-
+                <!-- 상태 -->
                 <div class="field">
                     <label>상태</label>
                     <select name="status">
@@ -196,7 +199,7 @@
                     <div class="muted ellipsis" th:text="${p.buildingName} ?: ''">건물명</div>
                 </td>
 
-                <td class="ellipsis" th:text="${p.address}">주소</td>
+                <td class="ellipsis" th:text="${p.lotAddress}">주소</td>
 
                 <td>
                     <span class="badge" th:text="${p.dealType.label}">월세</span>
