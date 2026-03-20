@@ -152,7 +152,7 @@ cd [프로젝트 폴더명]
 이 프로젝트를 통해 하나의 제품을 만든다는 것은 단순한 기능 구현이 아니라, 사용자 경험과 디테일을 끝까지 고민하는 과정이라는 점을 배울 수 있었습니다.
 
 ### 메인 화면
-<img width="922" height="954" alt="Screenshot 2026-03-20 at 12 27 32 PM" src="https://github.com/user-attachments/assets/c2e19b29-ce80-46cd-af06-cfb4d70b26ac" />
+<img width="810" height="848" alt="Screenshot 2026-03-20 at 12 39 05 PM" src="https://github.com/user-attachments/assets/065295b7-b07b-48ea-a762-99dd2d5e21c5" />
 
 ### 등록 화면 
 <img width="774" height="933" alt="Screenshot 2026-03-20 at 12 27 54 PM" src="https://github.com/user-attachments/assets/6c886f3c-459a-4fea-91a9-51f8371fb298" />
