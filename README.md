@@ -14,12 +14,11 @@
 - [2. 주요 기능](#2-주요-기능)
 - [3. 기술 스택](#3-기술-스택)
 - [4. 아키텍처](#4-아키텍처)
-- [5. 실행 방법](#5-실행-방법)
-- [6. 환경 구성](#6-환경-구성)
-- [7. 트러블슈팅](#7-트러블슈팅)
-- [8. 디렉토리 구조](#8-디렉토리-구조)
-- [9. 포트폴리오](#9-포트폴리오)
-- [10. 회고](#10-회고)
+- [5. 환경 구성](#5-환경-구성)
+- [6. 트러블슈팅](#6-트러블슈팅)
+- [7. 디렉토리 구조](#7-디렉토리-구조)
+- [8. 포트폴리오](#8-포트폴리오)
+- [9. 회고](#9-회고)
 
 ---
 
@@ -135,29 +134,19 @@ cd [프로젝트 폴더명]
 검증 실패 이후에도 기존 입력값이 유지되도록 처리해 사용자 재입력 부담을 줄였습니다
 
 ## 8. 디렉토리 구조 
-src
- ├─ main
- │   ├─ java
- │   │   └─ config
- │   │   └─ controller
- |   |      └─ dto
- │   │   └─ domain
- │   │   └─ repository
- │   │   └─ service
- │   │   └─ infra
- │   ├─ resources
- │   │   ├─ templates
- │   │   ├─ static
- │   │   ├─ application.yml
- │   │   └─ application-local.yml
+
+<img width="360" height="279" alt="Screenshot 2026-03-20 at 11 51 40 AM" src="https://github.com/user-attachments/assets/38a6e987-d2f6-408e-b6cf-94ccafc15385" />
 
 
  ## 9. 포트폴리오
- 프로젝트의 문제 해결 과정과 구현 상세 내용은 별도 포트폴리오 문서에서 정리했습니다.
-	•	포트폴리오 링크: [추가 예정]
+
+프로젝트 상세 내용은 PDF 문서로 정리했습니다.
+
+[📄 포트폴리오 PDF 보기](./docs/property-manager-portfolio.pdf)
 
 ## 10. 회고
 이제 여기에 추가하면 좋은 건 딱 3개야.  
 **메인 화면 캡처**, **등록 화면 캡처**, **포트폴리오 링크**.  
 이 3개만 넣어도 README 완성도가 확 올라가.
-
+<img width="922" height="954" alt="Screenshot 2026-03-20 at 12 27 32 PM" src="https://github.com/user-attachments/assets/c2e19b29-ce80-46cd-af06-cfb4d70b26ac" />
+<img width="774" height="933" alt="Screenshot 2026-03-20 at 12 27 54 PM" src="https://github.com/user-attachments/assets/6c886f3c-459a-4fea-91a9-51f8371fb298" />
