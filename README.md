@@ -142,11 +142,12 @@ cd [프로젝트 폴더명]
 
 프로젝트 상세 내용은 PDF 문서로 정리했습니다.
 
-[📄 포트폴리오 PDF 보기](./docs/property-manager-portfolio.pdf)
+[📄 포트폴리오 PDF 보기](./docs/portfolio.pdf)
 
 ## 10. 회고
-이제 여기에 추가하면 좋은 건 딱 3개야.  
-**메인 화면 캡처**, **등록 화면 캡처**, **포트폴리오 링크**.  
-이 3개만 넣어도 README 완성도가 확 올라가.
+
+### 메인 화면
 <img width="922" height="954" alt="Screenshot 2026-03-20 at 12 27 32 PM" src="https://github.com/user-attachments/assets/c2e19b29-ce80-46cd-af06-cfb4d70b26ac" />
+
+### 등록 화면 
 <img width="774" height="933" alt="Screenshot 2026-03-20 at 12 27 54 PM" src="https://github.com/user-attachments/assets/6c886f3c-459a-4fea-91a9-51f8371fb298" />
