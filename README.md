@@ -5,7 +5,7 @@
 
 - **개발 기간**: 2026.02.01 ~ 2026.03.01
 - **개발 인원**: 1명
-- **포트폴리오**: [(./docs/portfolio.pdf)]
+- **포트폴리오**: [포트폴리오 PDF 보기](./docs/portfolio.pdf)
 - **배포 테스트용** : https://github.com/beermoon/Property_manager_aws
 
 ---
